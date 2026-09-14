@@ -1,113 +1,169 @@
-"""Pure scaling helpers and the recipes' special (non-linear) rules.
+"""Pure maths helpers + per-ingredient rounding rules.
 
-No experta here - just numbers in, numbers out - so this module is easy to test
-on its own (see ``selftest.py``).
+RICE IS THE BASE: every ingredient quantity is ``rice_cups * per_rice`` (its
+own independent relationship from proportions.json). No shared scaling factor.
+
+Rounding rules (per the recipe specs - decimal quantities are NEVER shown):
+  * "count"   whole items, minimum 1 (tomatoes, onions, peppers, ...)
+  * "half"    nearest 1/2, minimum 1/2 (seasoning cubes: 2.5 cubes is fine,
+              2.25 cubes rounds to 2)
+  * "quarter" nearest 1/4, minimum 1/4 (cups, oil, ...)
+  * "range"   fractional values become a range, e.g. 2.65 tbsp -> "2-3 tbsp",
+              2.25 tbsp -> "2 tbsp" (tsp/tbsp seasonings)
+  * "grams"   nearest 50 g, minimum 50 (protein)
+
+No experta here - just numbers in, numbers out - so this module is easy to
+test on its own (see ``selftest.py``).
 """
 
 import math
 
-
-def scaling_factor(desired_servings, reference_servings):
-    """Ratio between the desired batch and the reference batch."""
-    if reference_servings <= 0:
-        raise ValueError("reference servings must be > 0")
-    return desired_servings / float(reference_servings)
+_EPS = 1e-9
 
 
-def scale(quantity, factor):
-    """Straight proportional scaling: Q = Q_reference * factor."""
-    return quantity * factor
-
-
-def round_count(x):
-    """Round a countable item (tomatoes, cubes, ...) to a whole number, min 1."""
-    return max(1, int(round(x)))
-
-
-def round_volume(x, step=0.25):
-    """Round a volume (cups/tbsp/tsp) to a practical fraction (default 1/4)."""
-    return round(round(x / step) * step, 2)
-
-
-def round_grams(x, step=50):
-    """Round a mass in grams to a practical increment, min one step."""
-    return max(step, int(round(x / step)) * step)
-
-
-def scale_ingredient(qty, kind, factor):
-    """Scale one proportional ingredient and round it by its kind."""
-    raw = qty * factor
-    if kind == "count":
-        return round_count(raw)
-    return round_volume(raw)
-
-
-# --------------------------------------------------------------------------
-# Special rules - these parameters do NOT scale by a straight multiplication.
-# --------------------------------------------------------------------------
-
-def scotch_bonnet_count(spice, factor, by_spice):
-    """Heat is driven by the chosen spice level, then scaled with the batch."""
-    base = by_spice.get(spice, by_spice.get("medium", 2))
-    return max(1, int(round(base * factor)))
-
-
-def cooking_liquid_cups(rice_cups, ratio):
-    """Initial liquid = rice quantity * rice-specific liquid-to-rice ratio."""
-    return round_volume(rice_cups * ratio)
-
-
-def oil_tbsp(servings, base=2, per_serving=0.5):
-    """Fried-rice oil: a base amount plus a batch-dependent amount.
-
-    Deliberately NOT a straight multiple of servings (see fried_rice spec S6).
-    """
-    return round_volume(base + per_serving * servings)
-
-
-def cooked_rice_cups(raw_rice_cups, expansion):
-    """Cooked volume = raw volume * variety/method expansion factor."""
-    return round_volume(raw_rice_cups * expansion)
-
-
-def frying_batches(cooked_cups, capacity_cups):
-    """Non-linear rule: number of frying batches = ceil(rice / pan capacity)."""
-    if capacity_cups <= 0:
-        return 1
-    return max(1, int(math.ceil(cooked_cups / float(capacity_cups))))
-
-
-def pot_batches(desired_servings, capacity_servings):
-    """How many pots are needed if the batch exceeds a single pot's capacity."""
-    if capacity_servings <= 0:
-        return 1
-    return max(1, int(math.ceil(desired_servings / float(capacity_servings))))
-
+# ---------------------------------------------------------------------------
+# Formatting
+# ---------------------------------------------------------------------------
 
 def fmt(x):
-    """Format a number for display: drop a trailing ``.0`` but keep real fractions."""
+    """Format a number for display: drop a trailing ``.0`` but keep fractions."""
     try:
         xf = float(x)
     except (TypeError, ValueError):
         return str(x)
-    if abs(xf - round(xf)) < 1e-9:
+    if abs(xf - round(xf)) < _EPS:
         return str(int(round(xf)))
     return ("%.2f" % xf).rstrip("0").rstrip(".")
 
 
-def qty(amt, unit):
-    """Format an amount with its unit, e.g. ``7.5 cups`` / ``1 cup`` / ``5``.
+def fraction_str(x):
+    """Pretty-print common fractions: 0.25 -> '1/4', 1.5 -> '1 1/2', ..."""
+    whole = int(x)
+    frac = x - whole
+    names = {0.25: "1/4", 0.5: "1/2", 0.75: "3/4"}
+    for val, name in names.items():
+        if abs(frac - val) < _EPS:
+            if whole == 0:
+                return name
+            return "%d %s" % (whole, name)
+    return fmt(x)
 
-    Singularises "cups" -> "cup" when the amount is exactly one; other units
-    (tbsp, tsp, medium, ...) are left unchanged.
+
+def qty(amount, unit=""):
+    """Format an amount + unit, e.g. ``7.5 cups`` / ``1 cup`` / ``2-3 tbsp``.
+
+    ``amount`` may be a number or a ``(lo, hi)`` tuple (a measurement range).
     """
-    s = fmt(amt)
+    if amount is None:                      # e.g. "to taste" ingredients
+        return unit or "to taste"
+    if isinstance(amount, tuple):
+        return ("%s-%s %s" % (fmt(amount[0]), fmt(amount[1]), unit)).strip()
+    s = fraction_str(amount)
     if not unit:
         return s
-    if unit == "cups":
-        try:
-            if abs(float(amt) - 1.0) < 1e-9:
-                unit = "cup"
-        except (TypeError, ValueError):
-            pass
+    if float(amount) <= 1.0 + _EPS and unit.endswith("s"):
+        unit = unit[:-1]                   # singular: "1/2 cup" not "1/2 cups"
     return "%s %s" % (s, unit)
+
+
+# ---------------------------------------------------------------------------
+# Rounding rules (one per ingredient, chosen in proportions.json)
+# ---------------------------------------------------------------------------
+
+def round_count(x):
+    """Whole items (tomatoes, cubes, ...), minimum 1."""
+    return max(1, int(round(x)))
+
+
+def round_half(x):
+    """Nearest 1/2, minimum 1/2 (e.g. 2.25 -> 2, 2.6 -> 2.5)."""
+    return max(0.5, round(x * 2) / 2.0)
+
+
+def round_quarter(x):
+    """Nearest 1/4, minimum 1/4 (cups, tbsp, tsp)."""
+    return max(0.25, round(x * 4) / 4.0)
+
+
+def round_range(x):
+    """Fractional amounts become a practical range (spec: no decimals).
+
+    2.65 tbsp  -> (2, 3)   displayed as "2-3 tbsp"
+    2.25 tbsp  -> 2        displayed as "2 tbsp"   (spec example)
+    2.75 tbsp  -> 3        near enough to a whole number
+    """
+    whole = math.floor(x)
+    frac = x - whole
+    if frac <= 0.25 + _EPS:
+        return max(1, whole)
+    if frac >= 0.75 - _EPS:
+        return max(1, whole + 1)
+    return (whole, whole + 1)
+
+
+def round_grams(x, step=50):
+    """Mass in grams, rounded to a practical increment, minimum one step."""
+    return max(step, int(round(x / step)) * step)
+
+
+_ROUNDERS = {
+    "count": round_count,
+    "half": round_half,
+    "quarter": round_quarter,
+    "range": round_range,
+    "grams": round_grams,
+}
+
+
+def apply_rounding(x, rule):
+    """Apply one rounding rule by name; unknown rules round to 1/4."""
+    return _ROUNDERS.get(rule, round_quarter)(x)
+
+
+# ---------------------------------------------------------------------------
+# Rice-relative quantity calculation
+# ---------------------------------------------------------------------------
+
+def per_rice_quantity(rice_cups, per_rice, rule):
+    """Quantity of one ingredient = rice x its own per-rice relationship."""
+    return apply_rounding(rice_cups * per_rice, rule)
+
+
+def spice_quantity(rice_cups, spice, per_rice_by_spice, rule="count"):
+    """Spice-driven rule: base comes from the spice level, then the rice."""
+    per_rice = per_rice_by_spice.get(
+        spice, per_rice_by_spice.get(sorted(per_rice_by_spice)[0], 0.5))
+    return apply_rounding(rice_cups * per_rice, rule)
+
+
+def liquid_cups(rice_cups, ratio, rule="quarter"):
+    """Total cooking liquid target = rice x the rice type's liquid ratio."""
+    return apply_rounding(rice_cups * ratio, rule)
+
+
+def liquid_reserve(rice_cups, per_rice, rule="quarter"):
+    """Hot liquid kept aside for mid-cooking adjustments."""
+    return apply_rounding(rice_cups * per_rice, rule)
+
+
+def cooked_rice_cups(rice_cups, expansion, rule="half"):
+    """Expected cooked volume = raw rice x the rice type's expansion."""
+    return apply_rounding(rice_cups * expansion, rule)
+
+
+# ---------------------------------------------------------------------------
+# Equipment / batching rules (non-linear)
+# ---------------------------------------------------------------------------
+
+def pot_batches(rice_cups, capacity_cups):
+    """How many pots are needed if the batch exceeds one pot's capacity."""
+    if capacity_cups <= 0:
+        return 1
+    return max(1, int(math.ceil(rice_cups / float(capacity_cups))))
+
+
+def frying_batches(cooked_cups, capacity_cups):
+    """Number of frying batches = ceil(cooked rice / pan capacity)."""
+    if capacity_cups <= 0:
+        return 1
+    return max(1, int(math.ceil(cooked_cups / float(capacity_cups))))
