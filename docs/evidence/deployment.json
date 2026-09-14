@@ -1,0 +1,48 @@
+{
+  "verified_at_utc": "2026-09-14T22:38:58.807736+00:00",
+  "provider": "Railway",
+  "url": "https://expertsystemcooking-production.up.railway.app",
+  "project_id": "4f3e2267-b5b9-4eaa-8816-073105f58a94",
+  "environment_id": "e079a499-202d-4eca-81a7-55cf7906b8da",
+  "service_id": "184cbdcc-38cf-4d7b-88d8-5f145047b20c",
+  "deployment_id": "0e6b1c6b-81de-4e17-bb89-810dbe967a16",
+  "deployment_status": "SUCCESS",
+  "deployment_updated_at_utc": "2026-09-14T22:32:15.824Z",
+  "source_commit": "1f7a0006a488ec20c69e2944b2c28aa471799905",
+  "source_branch": "proportions",
+  "source_method": "Railway CLI upload from clean local worktree; GitHub push unavailable",
+  "implementation_hash": "1bbdcfba43ff9abb294f16c4d61a5825b59b8d48fbdc64920632b3e6d18e2fd6",
+  "config_hash": "657550b6981c6c243bc74d41f062af83be1311ad898e1bc7904396c12c96dca2",
+  "runtime": {"python": "3.12.14", "experta": "1.9.4", "frozendict": "1.2", "schema": "0.6.7"},
+  "infrastructure": {
+    "builder": "DOCKERFILE",
+    "region": "ams",
+    "replicas": 1,
+    "healthcheck_path": "/healthz",
+    "volume_id": "99d41d89-1bee-479f-8987-11c3d661e141",
+    "volume_mount": "/data",
+    "proportions_path": "/data/proportions.json",
+    "admin_token_configured": true,
+    "debug": false,
+    "unauthenticated_edit_override": false
+  },
+  "checks": {
+    "health": "passed",
+    "dish_metadata": "passed",
+    "configuration_read": "passed",
+    "jollof": {"rice_cups": 3, "steps": 11, "firings": 11},
+    "fried_rice": {"rice_cups": 3, "steps": 14, "firings": 14},
+    "unknown_dish_http_status": 400,
+    "index_html_exact_local_match": true,
+    "audit_javascript_exact_local_match": true,
+    "anonymous_invalid_save_http_status": 401,
+    "authenticated_invalid_save_http_status": 400,
+    "configuration_unchanged_after_checks": true
+  },
+  "limitations": [
+    "No interactive browser or usability evaluation",
+    "No long-term uptime or performance benchmark",
+    "Volume attachment verified; edited-rule persistence across cloud redeployment not experimentally tested",
+    "No recipe configuration was changed by the public checks"
+  ]
+}

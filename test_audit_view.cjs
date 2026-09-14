@@ -22,6 +22,8 @@ test('quantity and firing explanations share readable fields without raw identif
   assert.ok(visible(quantity).includes('3 × 0.67 = 2.01'));
   assert.ok(visible(quantity).includes('Round to whole items'));
   assert.ok(visible(step).includes('Prepare ingredients'));
+  assert.ok(visible(step).includes('Met: Recipe inputs and quantity calculations must be ready.'));
+  assert.ok(!visible(step).includes('\u2014'));
   assert.ok(visible(step).includes('Added step 2: Prepare.'));
   assert.ok(!visible(step).includes(firing.fired_at));
   assert.ok(step.includes(firing.rule_id)); // Still retained in the collapsed evidence.
@@ -31,7 +33,8 @@ test('skipped rules and batching use their actual evidence', () => {
   const veggie = sample('jollof_vegetarian');
   const skipped = veggie.audit.not_fired.find(f => f.rule_id.endsWith('.cook_protein'));
   const text = visible(AuditView.skipped(skipped, veggie));
-  assert.ok(text.includes('Not met — A protein must be selected.'));
+  assert.ok(text.includes('Not met: A protein must be selected.'));
+  assert.ok(!text.includes('\u2014'));
   assert.ok(text.includes('Did not fire'));
   assert.ok(text.includes('end of the run'));
   const fried = sample('fried_rice_boundary');

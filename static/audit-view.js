@@ -76,7 +76,7 @@
         const step = plan.steps.find(s => s.order === c.fields.order);
         reason = 'The ' + (step ? step.phase.toLowerCase() : 'output') + ' step must not already exist.';
       }
-      return (c.satisfied ? 'Met — ' : 'Not met — ') + (reason || 'Additional condition; see technical details.');
+      return (c.satisfied ? 'Met: ' : 'Not met: ') + (reason || 'Additional condition; see technical details.');
     });
   }
   function decisionLine(d) {

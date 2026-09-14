@@ -32,6 +32,16 @@ Stop the containers with `docker compose down`. This preserves the named rules v
 
 ## Deploy on Railway
 
+### Verified deployment
+
+The application is live at [ExpertCook](https://expertsystemcooking-production.up.railway.app). Railway deployment `0e6b1c6b-81de-4e17-bb89-810dbe967a16` reached `SUCCESS` on 14 September 2026 at 22:32 UTC (23:32 in Lagos). Public HTTPS checks completed at 22:38 UTC. The uploaded source was clean commit `1f7a0006a488ec20c69e2944b2c28aa471799905` on `proportions`, deployed directly with the Railway CLI. GitHub push was unavailable because this environment lacked GitHub credentials; the deployment does not depend on that push.
+
+The production service has one replica in `ams`, an `expertcook-rules` volume mounted at `/data`, `PROPORTIONS_PATH=/data/proportions.json`, `PORT=8000`, `DEBUG=0`, `ALLOW_RULE_EDITS=0`, and a secret `RULES_ADMIN_TOKEN`. The same token is retained in the ignored local `.env` file. Never commit or include its value in evidence.
+
+Health, metadata, both recipe plans and configuration reads passed over HTTPS. The public HTML and audit JavaScript matched the local files byte-for-byte. Anonymous saves returned 401; an authenticated invalid configuration returned 400, demonstrating that the token was accepted without changing rules. See [deployment evidence](evidence/deployment.json). Volume attachment was verified; persistence of an edited recipe across a cloud redeployment has not yet been experimentally tested.
+
+### Reproducing or replacing the deployment
+
 1. Commit and push the reviewed changes to the intended GitHub branch. The work was implemented on `proportions`; choose that branch in Railway if it has not been merged into `main`.
 2. Create a Railway project and select the repository as a service source. The root Dockerfile and `railway.json` define the build and health check. Use the repository root as the service root.
 3. Attach a volume to this service at `/data` before enabling rule editing.
@@ -43,7 +53,7 @@ Stop the containers with `docker compose down`. This preserves the named rules v
 
 The Dockerfile starts `gunicorn --config gunicorn.conf.py server:app`. Gunicorn binds to `0.0.0.0:$PORT` with one worker and one thread. The static frontend is served by Flask, so a separate frontend host is unnecessary. See [Flask's Gunicorn deployment guidance](https://flask.palletsprojects.com/en/stable/deploying/gunicorn/).
 
-No Railway account or cloud resource is provisioned by these instructions alone. The local deployment files do not constitute evidence that a public deployment has succeeded.
+These steps describe the GitHub-connected option. The verified deployment above used a local-source CLI upload instead. Future CLI deployments can use the existing linked project; do not create a duplicate service or volume.
 
 ## Verify before a demonstration
 

@@ -2,7 +2,7 @@
 
 This chapter describes the implementation and software evaluation of ExpertCook, a rule-based cooking advisory system for Nigerian jollof rice and fried rice. The work addressed two implementation concerns: preserving the relationship between rice quantity and ingredient quantities, and explaining when and why procedural rules execute. The resulting system separates unrounded calculations from practical display quantities and attaches execution evidence to each generated cooking step.
 
-The reported evaluation concerns software behavior. It does not establish the culinary accuracy of the recipe ratios, the sensory quality of prepared meals, user satisfaction or food-safety outcomes. Results were collected locally on 14 September 2026. Public deployment is a subsequent activity, for which deployment files and instructions have been prepared.
+The reported evaluation concerns software behavior. It does not establish the culinary accuracy of the recipe ratios, the sensory quality of prepared meals, user satisfaction or food-safety outcomes. Local evaluation and subsequent Railway deployment checks were completed on 14 September 2026. Local regression results and public deployment observations are reported separately.
 
 ## 1 Implementation context
 
@@ -85,7 +85,9 @@ The application is packaged in a Docker image based on Python 3.12. The image in
 
 The editable knowledge file can be placed on a persistent volume through `PROPORTIONS_PATH`. An empty configured location is seeded on startup, while subsequent restarts preserve existing values. Rule saves require an administrator Bearer token unless the explicit local-only override is enabled. The public guide-generation interface does not require that token. A health endpoint verifies that the active knowledge base can be read and validated.
 
-Railway is the recommended host for this small demonstration: one Docker service, one volume and a configured administrator secret. The repository includes `railway.json`, Docker Compose configuration and a separate [deployment guide](DEPLOYMENT.md). Railway supports [Dockerfile builds](https://docs.railway.com/builds/dockerfiles) and [persistent volumes](https://docs.railway.com/volumes). This is a deployment recommendation; no public Railway deployment was performed during the reported evaluation.
+Railway hosts this small demonstration using one Docker service, one volume and a configured administrator secret. The repository includes `railway.json`, Docker Compose configuration and a separate [deployment guide](DEPLOYMENT.md). Railway supports [Dockerfile builds](https://docs.railway.com/builds/dockerfiles) and [persistent volumes](https://docs.railway.com/volumes).
+
+Deployment `0e6b1c6b-81de-4e17-bb89-810dbe967a16` reached `SUCCESS` at 22:32 UTC on 14 September 2026. The public application is [ExpertCook](https://expertsystemcooking-production.up.railway.app). Source commit `1f7a0006a488ec20c69e2944b2c28aa471799905` was uploaded from the clean local `proportions` branch using the Railway CLI; it was not deployed through a GitHub push. The service runs one replica in the `ams` region, with `/data` mounted as persistent storage. The remote audit reports Python 3.12.14, Experta 1.9.4 and frozendict 1.2. Its configuration and implementation hashes match the local evaluation evidence. Deployment identifiers, checks and limitations are retained in the [deployment record](evidence/deployment.json).
 
 ## 7 Evaluation method
 
@@ -111,8 +113,14 @@ The matrix is exhaustive across these selected dimensions only. It does not cove
 | Docker image build and startup | Successful; Compose reported the service healthy |
 | Container dependency check | No broken requirements |
 | HTTP smoke checks against the container | Both dishes passed; unknown dish rejected |
+| Railway deployment | SUCCESS; persistent volume attached at `/data` |
+| Public HTTPS smoke checks | Both dishes passed; unknown dish rejected with HTTP 400 |
+| Deployed frontend | HTML and audit JavaScript exactly matched committed files |
+| Remote administrator protection | Anonymous save rejected with 401; authenticated invalid input rejected with 400; configuration unchanged |
 
 The Docker smoke check returned 11 steps and 11 firing events for the three-cup jollof request, and 14 steps and 14 events for the three-cup fried-rice request. It also checked readiness, dish metadata and access to the knowledge base. It did not modify the active configuration.
+
+The same HTTP smoke checks passed against the public HTTPS service, returning 11 jollof and 14 fried-rice steps with matching firing counts. Additional checks verified the delivered frontend and administrator protection. The authenticated check deliberately submitted an invalid configuration, so it tested authentication and validation without replacing the active knowledge base. These observations establish reachability and the checked behavior at the time of testing, not a long-term uptime or performance guarantee.
 
 | Representative condition | Earlier behavior from source inspection | Implemented and tested behavior |
 |---|---|---|
@@ -136,9 +144,9 @@ The evidence also places boundaries on those conclusions. The ingredient ratios 
 
 The concurrency design prioritizes consistency for a small demonstration. It serializes inference and supports one file-backed service replica, so its scalability has not been established. Configuration saves use last-write-wins behavior, and there is no permanent named-user edit history. Larger deployments would require shared versioned storage, richer access control and retained run records.
 
-The browser JavaScript passed a syntax check, but a connected browser was unavailable for interactive visual verification. No screenshot evidence or browser usability result is claimed. The public-hosting procedure has been documented, but public uptime, HTTPS access, remote response times and persistence across cloud redeployments remain unmeasured.
+The browser JavaScript passed a syntax check and five presentation tests, but a connected browser was unavailable for interactive visual verification. No screenshot evidence or browser usability result is claimed. Public HTTPS access was verified; sustained uptime, remote response-time distributions and persistence of edited rules across cloud redeployments remain unmeasured. The mounted volume and startup logic provide the persistence mechanism, but are not substitutes for a controlled cloud persistence experiment.
 
-To extend this chapter after deployment, record the public URL, deployment identifier, Git revision and deployment date; run the non-mutating HTTP smoke checks against that URL; and conduct a controlled rule-save and redeployment-persistence check. A separate expert review and cooking trial would be required to assess the culinary knowledge, followed by a user study if usability or satisfaction is an evaluation objective.
+To extend this evaluation, conduct a controlled rule-save and redeployment-persistence check and collect sustained availability observations. A separate expert review and cooking trial would be required to assess the culinary knowledge, followed by a user study if usability or satisfaction is an evaluation objective.
 
 ## 10 Reproducing the reported results
 
@@ -150,6 +158,7 @@ python verify.py --output docs/evidence
 python replay.py docs/evidence/fried_rice_boundary.json
 docker compose up --build -d
 python smoke_web.py http://localhost:8000
+python smoke_web.py https://expertsystemcooking-production.up.railway.app
 ```
 
 The verification command refreshes the evidence files. Preserve the current report and examples before running a new evaluation, and associate each new result set with its configuration, source version and runtime. Chapter numbering, institutional formatting and citation style can then be adapted without changing the underlying evidence or presenting planned evaluation as completed work.
