@@ -1,0 +1,1450 @@
+{
+  "dish": "Fried Rice",
+  "dish_key": "fried_rice",
+  "params": {
+    "rice_cups": 2.01,
+    "rice_type": "parboiled",
+    "spice": "mild",
+    "protein": "chicken",
+    "frying_capacity": 6.0
+  },
+  "summary": [
+    "Rice (the base): 2.01 cups of parboiled rice",
+    "Every other quantity is derived from the rice using its own independent proportionality rule.",
+    "Total cooking liquid target: 3 cups (ratio 1.5)",
+    "Hot liquid reserve: 1/2 cup",
+    "Protein: chicken",
+    "Expected cooked rice: ~6 cups   Frying batches: 2"
+  ],
+  "steps": [
+    {
+      "order": 10,
+      "phase": "Overview",
+      "text": "Nigerian Fried Rice for 2.01 cup(s) of parboiled rice.\nRice is the base: every other quantity below is derived from it using its own independent proportionality rule.\n\nIngredients (all relative to the rice):\n  - RICE (base): 2.01 cups  (the base ingredient - everything is relative to it)\n  - Green bell peppers: 1/4 bulb\n  - Carrots: 1/4 stick\n  - Curry powder: 0-1 tbsp\n  - Green beans: 3/4 cup\n  - Green peas: 3/4 cup\n  - Onions: 2 bulbs\n  - Protein (chicken / liver): 300 g  (Grams of protein per cup of rice; 0 when protein is 'none')\n  - Salt: to taste  (Account for salt already in the stock and seasoning cubes)\n  - Scotch bonnet pepper: 1  (Driven by the spice level, then by the rice)\n  - Seasoning cubes: 2 cubes  (Reduce if the stock is already well seasoned)\n  - Spring onions (optional): 1/4 cup\n  - Stock (total cooking liquid): 3 cups  (Total liquid target - subtract liquid already in the stock)\n  - Sweet corn: 1/2 cup\n  - Thyme: 1 tsp\n  - Vegetable oil: 1-2 tbsp\n  - rice cooking liquid: 3 cups (ratio 1.5 for parboiled rice)\n  - hot liquid reserve: 1/2 cup\n  - protein: chicken (300 g), cooked before frying\nPlanning figures:\n  - expected cooked rice: about 6 cups (raw x 3 expansion)\n  - frying capacity: 6 cups/batch  ->  2 frying batch(es)",
+      "rule_id": "FriedRiceEngine.overview",
+      "firing_sequence": 10
+    },
+    {
+      "order": 20,
+      "phase": "Prepare",
+      "text": "Measure every calculated quantity above. Wash and drain the rice (parboiled rice may need no soaking; adjust for your type). Wash, peel if needed and dice the carrots (1/4 stick), trim and cut the green beans (3/4 cup), deseed and dice the bell peppers (1/4 bulb), and drain the peas (3/4 cup) and sweet corn (1/2 cup). Peel and chop the onions (2 bulbs), keeping the frying portion separate from any reserved onion. Group firmer vegetables (carrot, green beans) for the earlier frying stage and softer ones (peas, corn, peppers) for later.",
+      "rule_id": "FriedRiceEngine.prepare",
+      "firing_sequence": 4
+    },
+    {
+      "order": 30,
+      "phase": "Protein",
+      "text": "Handle raw protein SEPARATELY from ready-to-eat ingredients. Cut the 300 g of chicken into bite-size pieces, season with onion, salt, curry and thyme, and cook through (liver must be thoroughly cooked; chicken until no longer pink). Set aside with any stock it produces - the stock counts toward the rice's liquid and seasoning.",
+      "rule_id": "FriedRiceEngine.cook_protein",
+      "firing_sequence": 1
+    },
+    {
+      "order": 40,
+      "phase": "Rice liquid",
+      "text": "Prepare the cooking liquid: about 3 cups of stock or seasoned water for the rice (rice x 1.5). If the stock is already seasoned, reduce the salt and seasoning cubes accordingly. Keep about 1/2 cup of hot stock/water aside as a reserve for adjustments during cooking.",
+      "rule_id": "FriedRiceEngine.rice_liquid",
+      "firing_sequence": 9
+    },
+    {
+      "order": 50,
+      "phase": "Cook rice",
+      "text": "Put the rice in the pot with the calculated liquid. You may add a little of the curry, thyme and onion at this stage depending on your style. Stir gently, cover, bring to a boil then reduce to a gentle simmer. Cook until the grains are just tender for frying - NOT soft and mushy, or they will break apart when fried.",
+      "rule_id": "FriedRiceEngine.cook_rice",
+      "firing_sequence": 5
+    },
+    {
+      "order": 60,
+      "phase": "Inspect rice",
+      "text": "Inspect the rice: still hard with no liquid left -> add a small amount of the 1/2 cup hot reserve, cover and continue on low. Still hard with liquid left -> keep cooking. Tender with no liquid -> proceed to cooling. Tender with excess liquid -> drive it off uncovered on low heat. Repeat until the rice is tender with no standing liquid.",
+      "rule_id": "FriedRiceEngine.inspect_rice",
+      "firing_sequence": 13
+    },
+    {
+      "order": 70,
+      "phase": "Cool rice",
+      "text": "Spread the cooked rice in a shallow tray so excess steam escapes and the grains dry and separate. Judge the condition: too wet (needs more drying), just right (dry, separate grains), or too dry (needs a light sprinkle of hot stock). Handle gently to minimise breakage. If cooking in advance, cool quickly, refrigerate and reheat properly - never leave cooked rice at room temperature for long.",
+      "rule_id": "FriedRiceEngine.condition_rice",
+      "firing_sequence": 12
+    },
+    {
+      "order": 80,
+      "phase": "Fry base",
+      "text": "Check the pan can hold the ingredients for this stage, then heat 1-2 tbsp of vegetable oil in a wide pan or wok over medium heat. Fry the reserved onions until softened and fragrant. Add the cooked chicken and toss briefly to pick up the oil and flavour.",
+      "rule_id": "FriedRiceEngine.fry_onions_protein",
+      "firing_sequence": 3
+    },
+    {
+      "order": 90,
+      "phase": "Fry veg",
+      "text": "Add the firmer vegetables first (carrots 1/4 stick, green beans 3/4 cup) and fry a few minutes, then the softer ones (green peas 3/4 cup, sweet corn 1/2 cup, bell peppers 1/4 bulb) with the 1 scotch bonnet. Stir regularly over medium heat. Keep them bright and just-tender: if they soften too much or release a lot of liquid, raise the heat briefly and finish quickly - soggy vegetables make soggy fried rice.",
+      "rule_id": "FriedRiceEngine.fry_veg",
+      "firing_sequence": 2
+    },
+    {
+      "order": 100,
+      "phase": "Season",
+      "text": "Stir in 0-1 tbsp curry powder, 1 tsp thyme, 2 cubes seasoning cube(s) and salt to taste. Cook briefly to distribute the flavour. Remember what already went into the rice and the stock - the cubes have their own adjustment rule, not a blind scale. If undersalted, add a little at a time; if oversalted, stop adding salty stock.",
+      "rule_id": "FriedRiceEngine.season_veg",
+      "firing_sequence": 6
+    },
+    {
+      "order": 110,
+      "phase": "Combine",
+      "text": "Add the cooled rice to the vegetable mixture. If the rice exceeds the pan's capacity, fry in batches - each batch gets its share of vegetables. Fold gently with a lifting motion so the grains stay whole and the vegetables spread evenly. If the rice is too dry to combine, sprinkle a little hot stock; if it is too wet, let the excess steam off before adding more.\n  NOTE: about 6 cups of cooked rice is more than one 6 cups frying batch. Divide into 2 batches - do NOT overload the pan or simply cook it longer.",
+      "rule_id": "FriedRiceEngine.combine",
+      "firing_sequence": 7
+    },
+    {
+      "order": 120,
+      "phase": "Fry",
+      "text": "Fry the combined rice over medium heat, stirring gently and regularly. Watch for: uneven heating (keep going), vegetables not distributed (fold more), rice sticking (lower the heat, stir gently), rice too dry (a small splash of hot stock - but avoid unnecessary liquid), or grains breaking (stir less). Stop when the rice is evenly heated, well seasoned and dry with separate grains.",
+      "rule_id": "FriedRiceEngine.fry_rice",
+      "firing_sequence": 14
+    },
+    {
+      "order": 130,
+      "phase": "Validate",
+      "text": "Inspect the finished rice: seasoning (adjust in small steps using each ingredient's own rule), moisture (too dry -> tiny splash of hot stock; too moist -> fry uncovered a little longer), texture (too soft -> no more liquid or stirring), and vegetable condition. Remember extra frying dries the rice and softens the vegetables, so adjust in one direction at a time and re-check.",
+      "rule_id": "FriedRiceEngine.validate",
+      "firing_sequence": 8
+    },
+    {
+      "order": 140,
+      "phase": "Serve",
+      "text": "Turn off the heat once the rice reaches the required condition and let it settle briefly. Stir in the spring onions (1/4 cup) at the very end so they stay fresh. Fluff gently to separate the grains and distribute the vegetables, then serve hot. Enjoy your fried rice!",
+      "rule_id": "FriedRiceEngine.finish",
+      "firing_sequence": 11
+    }
+  ],
+  "ingredients": [
+    {
+      "key": "rice",
+      "label": "Rice",
+      "amount": "2.01",
+      "unit": "cups",
+      "note": "the base ingredient - everything is relative to it",
+      "raw_amount": 2.01,
+      "derivation": {
+        "formula": "User input",
+        "raw_amount": 2.01,
+        "rounding": "none"
+      }
+    },
+    {
+      "key": "bell_peppers",
+      "label": "Green bell peppers",
+      "amount": "1/4",
+      "unit": "bulb",
+      "note": null,
+      "raw_amount": 0.201,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 0.1,
+        "source": "fried_rice.ingredients.bell_peppers.per_rice",
+        "raw_amount": 0.201,
+        "rounding": "quarter"
+      }
+    },
+    {
+      "key": "carrots",
+      "label": "Carrots",
+      "amount": "1/4",
+      "unit": "stick",
+      "note": null,
+      "raw_amount": 0.201,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 0.1,
+        "source": "fried_rice.ingredients.carrots.per_rice",
+        "raw_amount": 0.201,
+        "rounding": "quarter"
+      }
+    },
+    {
+      "key": "curry_powder",
+      "label": "Curry powder",
+      "amount": "0-1",
+      "unit": "tbsp",
+      "note": null,
+      "raw_amount": 0.5025,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 0.25,
+        "source": "fried_rice.ingredients.curry_powder.per_rice",
+        "raw_amount": 0.5025,
+        "rounding": "range"
+      }
+    },
+    {
+      "key": "green_beans",
+      "label": "Green beans",
+      "amount": "3/4",
+      "unit": "cups",
+      "note": null,
+      "raw_amount": 0.7035,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 0.35,
+        "source": "fried_rice.ingredients.green_beans.per_rice",
+        "raw_amount": 0.7035,
+        "rounding": "quarter"
+      }
+    },
+    {
+      "key": "green_peas",
+      "label": "Green peas",
+      "amount": "3/4",
+      "unit": "cups",
+      "note": null,
+      "raw_amount": 0.7035,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 0.35,
+        "source": "fried_rice.ingredients.green_peas.per_rice",
+        "raw_amount": 0.7035,
+        "rounding": "quarter"
+      }
+    },
+    {
+      "key": "onions",
+      "label": "Onions",
+      "amount": "2",
+      "unit": "bulbs",
+      "note": null,
+      "raw_amount": 2.01,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 1,
+        "source": "fried_rice.ingredients.onions.per_rice",
+        "raw_amount": 2.01,
+        "rounding": "count"
+      }
+    },
+    {
+      "key": "protein",
+      "label": "Protein (chicken / liver)",
+      "amount": "300",
+      "unit": "g",
+      "note": "Grams of protein per cup of rice; 0 when protein is 'none'",
+      "raw_amount": 301.5,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 150,
+        "source": "fried_rice.ingredients.protein.per_rice",
+        "raw_amount": 301.5,
+        "rounding": "grams"
+      }
+    },
+    {
+      "key": "salt",
+      "label": "Salt",
+      "amount": null,
+      "unit": "",
+      "note": "Account for salt already in the stock and seasoning cubes",
+      "raw_amount": null,
+      "derivation": {
+        "formula": "To taste; no fixed amount",
+        "rice_cups": 2.01,
+        "ratio": null,
+        "source": "fried_rice.ingredients.salt",
+        "raw_amount": null,
+        "rounding": "none"
+      }
+    },
+    {
+      "key": "scotch_bonnet",
+      "label": "Scotch bonnet pepper",
+      "amount": "1",
+      "unit": "",
+      "note": "Driven by the spice level, then by the rice",
+      "raw_amount": 0.5025,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 0.25,
+        "source": "fried_rice.ingredients.scotch_bonnet.per_rice_by_spice.mild",
+        "raw_amount": 0.5025,
+        "rounding": "count"
+      }
+    },
+    {
+      "key": "seasoning_cubes",
+      "label": "Seasoning cubes",
+      "amount": "2",
+      "unit": "cubes",
+      "note": "Reduce if the stock is already well seasoned",
+      "raw_amount": 2.01,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 1.0,
+        "source": "fried_rice.ingredients.seasoning_cubes.per_rice",
+        "raw_amount": 2.01,
+        "rounding": "half"
+      }
+    },
+    {
+      "key": "spring_onions",
+      "label": "Spring onions (optional)",
+      "amount": "1/4",
+      "unit": "cups",
+      "note": null,
+      "raw_amount": 0.25125,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 0.125,
+        "source": "fried_rice.ingredients.spring_onions.per_rice",
+        "raw_amount": 0.25125,
+        "rounding": "quarter"
+      }
+    },
+    {
+      "key": "stock",
+      "label": "Stock (total cooking liquid)",
+      "amount": "3",
+      "unit": "cups",
+      "note": "Total liquid target - subtract liquid already in the stock",
+      "raw_amount": 3.015,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 1.5,
+        "source": "fried_rice.rice_types.parboiled.liquid_ratio",
+        "raw_amount": 3.015,
+        "rounding": "quarter"
+      }
+    },
+    {
+      "key": "sweet_corn",
+      "label": "Sweet corn",
+      "amount": "1/2",
+      "unit": "cups",
+      "note": null,
+      "raw_amount": 0.5025,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 0.25,
+        "source": "fried_rice.ingredients.sweet_corn.per_rice",
+        "raw_amount": 0.5025,
+        "rounding": "quarter"
+      }
+    },
+    {
+      "key": "thyme",
+      "label": "Thyme",
+      "amount": "1",
+      "unit": "tsp",
+      "note": null,
+      "raw_amount": 1.005,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 0.5,
+        "source": "fried_rice.ingredients.thyme.per_rice",
+        "raw_amount": 1.005,
+        "rounding": "range"
+      }
+    },
+    {
+      "key": "vegetable_oil",
+      "label": "Vegetable oil",
+      "amount": "1-2",
+      "unit": "tbsp",
+      "note": null,
+      "raw_amount": 1.5075,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 2.01,
+        "ratio": 0.75,
+        "source": "fried_rice.ingredients.vegetable_oil.per_rice",
+        "raw_amount": 1.5075,
+        "rounding": "range"
+      }
+    }
+  ],
+  "calc": {
+    "dish": "Fried Rice",
+    "rice_cups": 2.01,
+    "rice_type": "parboiled",
+    "liquid_ratio": 1.5,
+    "expansion": 3.0,
+    "ing": {
+      "rice": {
+        "label": "Rice",
+        "amount": 2.01,
+        "raw_amount": 2.01,
+        "unit": "cups",
+        "derivation": {
+          "formula": "User input",
+          "raw_amount": 2.01,
+          "rounding": "none"
+        },
+        "note": "the base ingredient - everything is relative to it"
+      },
+      "bell_peppers": {
+        "label": "Green bell peppers",
+        "unit": "bulb",
+        "note": null,
+        "special": null,
+        "raw_amount": 0.201,
+        "amount": 0.25,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 0.1,
+          "source": "fried_rice.ingredients.bell_peppers.per_rice",
+          "raw_amount": 0.201,
+          "rounding": "quarter"
+        }
+      },
+      "carrots": {
+        "label": "Carrots",
+        "unit": "stick",
+        "note": null,
+        "special": null,
+        "raw_amount": 0.201,
+        "amount": 0.25,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 0.1,
+          "source": "fried_rice.ingredients.carrots.per_rice",
+          "raw_amount": 0.201,
+          "rounding": "quarter"
+        }
+      },
+      "curry_powder": {
+        "label": "Curry powder",
+        "unit": "tbsp",
+        "note": null,
+        "special": null,
+        "raw_amount": 0.5025,
+        "amount": [
+          0,
+          1
+        ],
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 0.25,
+          "source": "fried_rice.ingredients.curry_powder.per_rice",
+          "raw_amount": 0.5025,
+          "rounding": "range"
+        }
+      },
+      "green_beans": {
+        "label": "Green beans",
+        "unit": "cups",
+        "note": null,
+        "special": null,
+        "raw_amount": 0.7035,
+        "amount": 0.75,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 0.35,
+          "source": "fried_rice.ingredients.green_beans.per_rice",
+          "raw_amount": 0.7035,
+          "rounding": "quarter"
+        }
+      },
+      "green_peas": {
+        "label": "Green peas",
+        "unit": "cups",
+        "note": null,
+        "special": null,
+        "raw_amount": 0.7035,
+        "amount": 0.75,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 0.35,
+          "source": "fried_rice.ingredients.green_peas.per_rice",
+          "raw_amount": 0.7035,
+          "rounding": "quarter"
+        }
+      },
+      "onions": {
+        "label": "Onions",
+        "unit": "bulbs",
+        "note": null,
+        "special": null,
+        "raw_amount": 2.01,
+        "amount": 2,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 1,
+          "source": "fried_rice.ingredients.onions.per_rice",
+          "raw_amount": 2.01,
+          "rounding": "count"
+        }
+      },
+      "protein": {
+        "label": "Protein (chicken / liver)",
+        "unit": "g",
+        "note": "Grams of protein per cup of rice; 0 when protein is 'none'",
+        "special": "protein",
+        "raw_amount": 301.5,
+        "amount": 300,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 150,
+          "source": "fried_rice.ingredients.protein.per_rice",
+          "raw_amount": 301.5,
+          "rounding": "grams"
+        }
+      },
+      "salt": {
+        "label": "Salt",
+        "unit": "",
+        "note": "Account for salt already in the stock and seasoning cubes",
+        "special": "to_taste",
+        "raw_amount": null,
+        "amount": null,
+        "derivation": {
+          "formula": "To taste; no fixed amount",
+          "rice_cups": 2.01,
+          "ratio": null,
+          "source": "fried_rice.ingredients.salt",
+          "raw_amount": null,
+          "rounding": "none"
+        }
+      },
+      "scotch_bonnet": {
+        "label": "Scotch bonnet pepper",
+        "unit": "",
+        "note": "Driven by the spice level, then by the rice",
+        "special": "spice",
+        "raw_amount": 0.5025,
+        "amount": 1,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 0.25,
+          "source": "fried_rice.ingredients.scotch_bonnet.per_rice_by_spice.mild",
+          "raw_amount": 0.5025,
+          "rounding": "count"
+        }
+      },
+      "seasoning_cubes": {
+        "label": "Seasoning cubes",
+        "unit": "cubes",
+        "note": "Reduce if the stock is already well seasoned",
+        "special": "seasoning",
+        "raw_amount": 2.01,
+        "amount": 2.0,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 1.0,
+          "source": "fried_rice.ingredients.seasoning_cubes.per_rice",
+          "raw_amount": 2.01,
+          "rounding": "half"
+        }
+      },
+      "spring_onions": {
+        "label": "Spring onions (optional)",
+        "unit": "cups",
+        "note": null,
+        "special": null,
+        "raw_amount": 0.25125,
+        "amount": 0.25,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 0.125,
+          "source": "fried_rice.ingredients.spring_onions.per_rice",
+          "raw_amount": 0.25125,
+          "rounding": "quarter"
+        }
+      },
+      "stock": {
+        "label": "Stock (total cooking liquid)",
+        "unit": "cups",
+        "note": "Total liquid target - subtract liquid already in the stock",
+        "special": "liquid",
+        "raw_amount": 3.015,
+        "amount": 3.0,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 1.5,
+          "source": "fried_rice.rice_types.parboiled.liquid_ratio",
+          "raw_amount": 3.015,
+          "rounding": "quarter"
+        }
+      },
+      "sweet_corn": {
+        "label": "Sweet corn",
+        "unit": "cups",
+        "note": null,
+        "special": null,
+        "raw_amount": 0.5025,
+        "amount": 0.5,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 0.25,
+          "source": "fried_rice.ingredients.sweet_corn.per_rice",
+          "raw_amount": 0.5025,
+          "rounding": "quarter"
+        }
+      },
+      "thyme": {
+        "label": "Thyme",
+        "unit": "tsp",
+        "note": null,
+        "special": null,
+        "raw_amount": 1.005,
+        "amount": 1,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 0.5,
+          "source": "fried_rice.ingredients.thyme.per_rice",
+          "raw_amount": 1.005,
+          "rounding": "range"
+        }
+      },
+      "vegetable_oil": {
+        "label": "Vegetable oil",
+        "unit": "tbsp",
+        "note": null,
+        "special": null,
+        "raw_amount": 1.5075,
+        "amount": [
+          1,
+          2
+        ],
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 2.01,
+          "ratio": 0.75,
+          "source": "fried_rice.ingredients.vegetable_oil.per_rice",
+          "raw_amount": 1.5075,
+          "rounding": "range"
+        }
+      }
+    },
+    "liquid_reserve_raw": 0.5025,
+    "liquid_reserve": 0.5,
+    "liquid_cups": 3.0,
+    "protein": "chicken",
+    "protein_g": 300,
+    "cooked_cups_raw": 6.03,
+    "cooked_cups": 6.0,
+    "frying_capacity": 6.0,
+    "frying_batches": 2
+  },
+  "audit": {
+    "schema_version": 1,
+    "run_id": "8a74d28e-4d24-4160-9541-87986a6ee36d",
+    "generated_at": "2026-09-14T21:26:23.666148+00:00",
+    "config_hash": "657550b6981c6c243bc74d41f062af83be1311ad898e1bc7904396c12c96dca2",
+    "implementation_hash": "1bbdcfba43ff9abb294f16c4d61a5825b59b8d48fbdc64920632b3e6d18e2fd6",
+    "knowledge_snapshot": {
+      "_help": "Rice-relative proportionality rules. RICE IS THE BASE INGREDIENT: every other ingredient defines its OWN independent relationship to rice via 'per_rice' (amount per 1 cup of rice). Recipes are independent and do NOT share parameters. Insert / modify / delete entries freely - the system picks up changes on the next request (or restart the server). Special ingredients: 'spice' (per_rice_by_spice), 'liquid' (amount = rice x rice_types[rice_type].liquid_ratio), 'protein' (per_rice grams applied to the chosen protein), 'seasoning' (normal per_rice but never scaled blindly - see note), 'to_taste' (no fixed quantity). Rounding rules: 'count' (whole items), 'half' (nearest 1/2), 'quarter' (nearest 1/4), 'range' (e.g. 2-3 tbsp when the value is fractional), 'grams' (nearest 50 g). These values are MOCKS - tune them to taste.",
+      "fried_rice": {
+        "description": "Nigerian Fried Rice - every quantity is relative to the rice",
+        "ingredients": {
+          "bell_peppers": {
+            "label": "Green bell peppers",
+            "per_rice": 0.1,
+            "rounding": "quarter",
+            "unit": "bulb"
+          },
+          "carrots": {
+            "label": "Carrots",
+            "per_rice": 0.1,
+            "rounding": "quarter",
+            "unit": "stick"
+          },
+          "curry_powder": {
+            "label": "Curry powder",
+            "per_rice": 0.25,
+            "rounding": "range",
+            "unit": "tbsp"
+          },
+          "green_beans": {
+            "label": "Green beans",
+            "per_rice": 0.35,
+            "rounding": "quarter",
+            "unit": "cups"
+          },
+          "green_peas": {
+            "label": "Green peas",
+            "per_rice": 0.35,
+            "rounding": "quarter",
+            "unit": "cups"
+          },
+          "onions": {
+            "label": "Onions",
+            "per_rice": 1,
+            "rounding": "count",
+            "unit": "bulbs"
+          },
+          "protein": {
+            "label": "Protein (chicken / liver)",
+            "note": "Grams of protein per cup of rice; 0 when protein is 'none'",
+            "per_rice": 150,
+            "rounding": "grams",
+            "special": "protein",
+            "unit": "g"
+          },
+          "salt": {
+            "label": "Salt",
+            "note": "Account for salt already in the stock and seasoning cubes",
+            "special": "to_taste"
+          },
+          "scotch_bonnet": {
+            "label": "Scotch bonnet pepper",
+            "note": "Driven by the spice level, then by the rice",
+            "per_rice_by_spice": {
+              "hot": 1.0,
+              "medium": 0.5,
+              "mild": 0.25
+            },
+            "rounding": "count",
+            "special": "spice",
+            "unit": ""
+          },
+          "seasoning_cubes": {
+            "label": "Seasoning cubes",
+            "note": "Reduce if the stock is already well seasoned",
+            "per_rice": 1.0,
+            "rounding": "half",
+            "special": "seasoning",
+            "unit": "cubes"
+          },
+          "spring_onions": {
+            "label": "Spring onions (optional)",
+            "per_rice": 0.125,
+            "rounding": "quarter",
+            "unit": "cups"
+          },
+          "stock": {
+            "label": "Stock (total cooking liquid)",
+            "note": "Total liquid target - subtract liquid already in the stock",
+            "rounding": "quarter",
+            "special": "liquid",
+            "unit": "cups"
+          },
+          "sweet_corn": {
+            "label": "Sweet corn",
+            "per_rice": 0.25,
+            "rounding": "quarter",
+            "unit": "cups"
+          },
+          "thyme": {
+            "label": "Thyme",
+            "per_rice": 0.5,
+            "rounding": "range",
+            "unit": "tsp"
+          },
+          "vegetable_oil": {
+            "label": "Vegetable oil",
+            "per_rice": 0.75,
+            "rounding": "range",
+            "unit": "tbsp"
+          }
+        },
+        "liquid_reserve_per_rice": 0.25,
+        "rice_types": {
+          "basmati": {
+            "expansion": 3.25,
+            "liquid_ratio": 1.25
+          },
+          "other": {
+            "expansion": 2.75,
+            "liquid_ratio": 1.75
+          },
+          "parboiled": {
+            "expansion": 3.0,
+            "liquid_ratio": 1.5
+          }
+        }
+      },
+      "jollof": {
+        "description": "Jollof Rice - every quantity is relative to the rice",
+        "ingredients": {
+          "bay_leaves": {
+            "label": "Bay leaves",
+            "per_rice": 0.67,
+            "rounding": "count",
+            "unit": ""
+          },
+          "bell_peppers": {
+            "label": "Bell peppers (tatashe)",
+            "per_rice": 0.67,
+            "rounding": "count",
+            "unit": ""
+          },
+          "curry_powder": {
+            "label": "Curry powder",
+            "per_rice": 0.33,
+            "rounding": "range",
+            "unit": "tbsp"
+          },
+          "onions": {
+            "label": "Onions",
+            "per_rice": 0.67,
+            "rounding": "count",
+            "unit": "medium"
+          },
+          "protein": {
+            "label": "Protein (chicken / beef / goat)",
+            "note": "Grams of protein per cup of rice; 0 when protein is 'none'",
+            "per_rice": 167,
+            "rounding": "grams",
+            "special": "protein",
+            "unit": "g"
+          },
+          "salt": {
+            "label": "Salt",
+            "note": "Account for salt already in the stock and seasoning cubes",
+            "special": "to_taste"
+          },
+          "scotch_bonnet": {
+            "label": "Scotch bonnet peppers",
+            "note": "Driven by the spice level, then by the rice",
+            "per_rice_by_spice": {
+              "hot": 1.33,
+              "medium": 0.67,
+              "mild": 0.33
+            },
+            "rounding": "count",
+            "special": "spice",
+            "unit": ""
+          },
+          "seasoning_cubes": {
+            "label": "Seasoning cubes",
+            "note": "Reduce if the stock is already well seasoned",
+            "per_rice": 0.67,
+            "rounding": "half",
+            "special": "seasoning",
+            "unit": "cubes"
+          },
+          "stock": {
+            "label": "Stock (total cooking liquid)",
+            "note": "Total liquid target - subtract liquid already in the sauce and any blender water",
+            "rounding": "quarter",
+            "special": "liquid",
+            "unit": "cups"
+          },
+          "thyme": {
+            "label": "Thyme",
+            "per_rice": 0.33,
+            "rounding": "range",
+            "unit": "tsp"
+          },
+          "tomato_paste": {
+            "label": "Tomato paste",
+            "per_rice": 0.67,
+            "rounding": "range",
+            "unit": "tbsp"
+          },
+          "tomatoes": {
+            "label": "Tomatoes",
+            "per_rice": 1.33,
+            "rounding": "count",
+            "unit": "medium"
+          },
+          "vegetable_oil": {
+            "label": "Vegetable oil",
+            "per_rice": 0.17,
+            "rounding": "quarter",
+            "unit": "cups"
+          }
+        },
+        "liquid_reserve_per_rice": 0.25,
+        "rice_types": {
+          "basmati": {
+            "expansion": 3.0,
+            "liquid_ratio": 1.25
+          },
+          "other": {
+            "expansion": 2.5,
+            "liquid_ratio": 1.75
+          },
+          "parboiled": {
+            "expansion": 2.75,
+            "liquid_ratio": 1.5
+          }
+        }
+      }
+    },
+    "runtime": {
+      "python": "3.12.1",
+      "experta": "1.9.4",
+      "frozendict": "1.2",
+      "schema": "0.6.7"
+    },
+    "initial_facts": [
+      {
+        "fact_id": 1,
+        "name": "ready",
+        "source": "validated parameters and knowledge"
+      },
+      {
+        "fact_id": 2,
+        "name": "protein_present",
+        "source": "params.protein"
+      }
+    ],
+    "firings": [
+      {
+        "sequence": 1,
+        "rule_id": "FriedRiceEngine.cook_protein",
+        "fired_at": "2026-09-14T21:26:23.656217+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "protein_present"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              2
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 30
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 3,
+            "order": 30,
+            "phase": "Protein"
+          }
+        ]
+      },
+      {
+        "sequence": 2,
+        "rule_id": "FriedRiceEngine.fry_veg",
+        "fired_at": "2026-09-14T21:26:23.656705+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 90
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 4,
+            "order": 90,
+            "phase": "Fry veg"
+          }
+        ]
+      },
+      {
+        "sequence": 3,
+        "rule_id": "FriedRiceEngine.fry_onions_protein",
+        "fired_at": "2026-09-14T21:26:23.657492+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 80
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [
+          {
+            "expression": "protein != none",
+            "inputs": {
+              "protein": "chicken"
+            },
+            "result": true
+          }
+        ],
+        "outputs": [
+          {
+            "fact_id": 5,
+            "order": 80,
+            "phase": "Fry base"
+          }
+        ]
+      },
+      {
+        "sequence": 4,
+        "rule_id": "FriedRiceEngine.prepare",
+        "fired_at": "2026-09-14T21:26:23.658347+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 20
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 6,
+            "order": 20,
+            "phase": "Prepare"
+          }
+        ]
+      },
+      {
+        "sequence": 5,
+        "rule_id": "FriedRiceEngine.cook_rice",
+        "fired_at": "2026-09-14T21:26:23.659121+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 50
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 7,
+            "order": 50,
+            "phase": "Cook rice"
+          }
+        ]
+      },
+      {
+        "sequence": 6,
+        "rule_id": "FriedRiceEngine.season_veg",
+        "fired_at": "2026-09-14T21:26:23.659721+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 100
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 8,
+            "order": 100,
+            "phase": "Season"
+          }
+        ]
+      },
+      {
+        "sequence": 7,
+        "rule_id": "FriedRiceEngine.combine",
+        "fired_at": "2026-09-14T21:26:23.660455+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 110
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [
+          {
+            "expression": "frying_batches > 1",
+            "inputs": {
+              "frying_batches": 2,
+              "cooked_cups_raw": 6.03,
+              "capacity": 6.0
+            },
+            "result": true
+          }
+        ],
+        "outputs": [
+          {
+            "fact_id": 9,
+            "order": 110,
+            "phase": "Combine"
+          }
+        ]
+      },
+      {
+        "sequence": 8,
+        "rule_id": "FriedRiceEngine.validate",
+        "fired_at": "2026-09-14T21:26:23.661310+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 130
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 10,
+            "order": 130,
+            "phase": "Validate"
+          }
+        ]
+      },
+      {
+        "sequence": 9,
+        "rule_id": "FriedRiceEngine.rice_liquid",
+        "fired_at": "2026-09-14T21:26:23.661973+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 40
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 11,
+            "order": 40,
+            "phase": "Rice liquid"
+          }
+        ]
+      },
+      {
+        "sequence": 10,
+        "rule_id": "FriedRiceEngine.overview",
+        "fired_at": "2026-09-14T21:26:23.662592+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 10
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [
+          {
+            "expression": "protein == none",
+            "inputs": {
+              "protein": "chicken"
+            },
+            "result": false
+          }
+        ],
+        "outputs": [
+          {
+            "fact_id": 12,
+            "order": 10,
+            "phase": "Overview"
+          }
+        ]
+      },
+      {
+        "sequence": 11,
+        "rule_id": "FriedRiceEngine.finish",
+        "fired_at": "2026-09-14T21:26:23.663395+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 140
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [
+          {
+            "expression": "spring_onions in ingredients",
+            "inputs": {
+              "spring_onions_present": true
+            },
+            "result": true
+          }
+        ],
+        "outputs": [
+          {
+            "fact_id": 13,
+            "order": 140,
+            "phase": "Serve"
+          }
+        ]
+      },
+      {
+        "sequence": 12,
+        "rule_id": "FriedRiceEngine.condition_rice",
+        "fired_at": "2026-09-14T21:26:23.664116+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 70
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 14,
+            "order": 70,
+            "phase": "Cool rice"
+          }
+        ]
+      },
+      {
+        "sequence": 13,
+        "rule_id": "FriedRiceEngine.inspect_rice",
+        "fired_at": "2026-09-14T21:26:23.664698+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 60
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 15,
+            "order": 60,
+            "phase": "Inspect rice"
+          }
+        ]
+      },
+      {
+        "sequence": 14,
+        "rule_id": "FriedRiceEngine.fry_rice",
+        "fired_at": "2026-09-14T21:26:23.665283+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 120
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 16,
+            "order": 120,
+            "phase": "Fry"
+          }
+        ]
+      }
+    ],
+    "not_fired": [],
+    "derived": {
+      "dish": "Fried Rice",
+      "rice_cups": 2.01,
+      "rice_type": "parboiled",
+      "liquid_ratio": 1.5,
+      "expansion": 3.0,
+      "liquid_reserve_raw": 0.5025,
+      "liquid_reserve": 0.5,
+      "liquid_cups": 3.0,
+      "protein": "chicken",
+      "protein_g": 300,
+      "cooked_cups_raw": 6.03,
+      "cooked_cups": 6.0,
+      "frying_capacity": 6.0,
+      "frying_batches": 2
+    },
+    "scope": "Guide generation only. Cooking observations are advice, not sensed facts."
+  }
+}
