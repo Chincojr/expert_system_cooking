@@ -1,68 +1,39 @@
-"""Smoke-test the running web server (dev only; safe to delete).
+"""Read-only HTTP checks for local or deployed ExpertCook services.
 
-Usage: venv/Scripts/python.exe smoke_web.py
-Assumes the server is already running on http://127.0.0.1:5000.
+Usage: python smoke_web.py [https://your-service.up.railway.app]
+Rule-save behavior is tested against isolated temporary files in test_regressions.py.
 """
 import json
+import sys
+import urllib.error
 import urllib.request
 
-BASE = "http://127.0.0.1:5000"
+
+def main(base="http://127.0.0.1:5000"):
+    def request(path, payload=None):
+        body = None if payload is None else json.dumps(payload).encode()
+        req = urllib.request.Request(base.rstrip("/") + path, data=body,
+                                     headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=30) as response:
+            return json.load(response)
+
+    assert request("/healthz")["status"] == "ok"
+    assert len(request("/api/dishes")["dishes"]) == 2
+    for dish, steps in (("jollof", 11), ("fried_rice", 14)):
+        plan = request("/api/plan", {"dish": dish, "params": {"rice_cups": 3}})
+        assert len(plan["steps"]) == steps
+        assert len(plan["audit"]["firings"]) == steps
+        assert plan["ingredients"][0]["key"] == "rice"
+        print("%s: %d steps, %d audited rule firings" % (dish, steps, steps))
+    assert set(request("/api/proportions")) >= {"jollof", "fried_rice"}
+    try:
+        request("/api/plan", {"dish": "egusi"})
+    except urllib.error.HTTPError as exc:
+        assert exc.code == 400
+    else:
+        raise AssertionError("Unknown dish was accepted")
+    print("HTTP smoke checks passed; no configuration was changed.")
 
 
-def get(path):
-    with urllib.request.urlopen(BASE + path) as r:
-        return json.loads(r.read().decode())
-
-
-def post(path, payload):
-    req = urllib.request.Request(
-        BASE + path, data=json.dumps(payload).encode(),
-        headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req) as r:
-        return json.loads(r.read().decode())
-
-
-dishes = get("/api/dishes")["dishes"]
-print("dishes:", [d["key"] for d in dishes])
-
-for dish in ("jollof", "fried_rice"):
-    plan = post("/api/plan", {"dish": dish, "params": {"rice_cups": 3}})
-    print("%s: %d steps, %d ingredients, first=%s %s"
-          % (dish, len(plan["steps"]), len(plan["ingredients"]),
-             plan["ingredients"][0]["label"],
-             plan["ingredients"][0]["amount"]))
-
-plan = post("/api/plan", {"dish": "fried_rice", "params": {"rice_cups": 2}})
-oil = next(i for i in plan["ingredients"] if i["key"] == "vegetable_oil")
-print("fried rice oil:", oil["amount"], oil["unit"])
-
-props = get("/api/proportions")
-print("proportionality dishes:", [k for k in props if not k.startswith("_")])
-
-# PUT round-trip: saving the same content back must succeed and change nothing.
-req = urllib.request.Request(
-    BASE + "/api/proportions", data=json.dumps(props).encode(),
-    headers={"Content-Type": "application/json"}, method="PUT")
-with urllib.request.urlopen(req) as r:
-    print("PUT same-content ->", r.status, r.read().decode())
-assert get("/api/proportions") == props, "round-trip changed the file!"
-
-# PUT with an invalid dish must be rejected (HTTP 400) and leave the file intact.
-bad = dict(props)
-bad["jollof"] = {"rice_types": {}, "ingredients": {}}
-req = urllib.request.Request(
-    BASE + "/api/proportions", data=json.dumps(bad).encode(),
-    headers={"Content-Type": "application/json"}, method="PUT")
-try:
-    urllib.request.urlopen(req)
-    raise SystemExit("ERROR: invalid proportions were accepted")
-except urllib.error.HTTPError as e:
-    print("PUT invalid -> HTTP", e.code, "(ok)")
-assert get("/api/proportions") == props, "rejected save modified the file!"
-
-try:
-    post("/api/plan", {"dish": "egusi", "params": {}})
-except urllib.error.HTTPError as e:
-    print("bad dish -> HTTP %d (ok)" % e.code)
-
-print("\nWeb smoke test passed.")
+if __name__ == "__main__":
+    main(sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:5000")

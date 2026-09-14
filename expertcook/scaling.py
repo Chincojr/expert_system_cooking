@@ -17,6 +17,7 @@ test on its own (see ``selftest.py``).
 """
 
 import math
+from decimal import Decimal, ROUND_CEILING
 
 _EPS = 1e-9
 
@@ -72,17 +73,17 @@ def qty(amount, unit=""):
 
 def round_count(x):
     """Whole items (tomatoes, cubes, ...), minimum 1."""
-    return max(1, int(round(x)))
+    return 0 if x == 0 else max(1, int(round(x)))
 
 
 def round_half(x):
     """Nearest 1/2, minimum 1/2 (e.g. 2.25 -> 2, 2.6 -> 2.5)."""
-    return max(0.5, round(x * 2) / 2.0)
+    return 0 if x == 0 else max(0.5, round(x * 2) / 2.0)
 
 
 def round_quarter(x):
     """Nearest 1/4, minimum 1/4 (cups, tbsp, tsp)."""
-    return max(0.25, round(x * 4) / 4.0)
+    return 0 if x == 0 else max(0.25, round(x * 4) / 4.0)
 
 
 def round_range(x):
@@ -92,6 +93,8 @@ def round_range(x):
     2.25 tbsp  -> 2        displayed as "2 tbsp"   (spec example)
     2.75 tbsp  -> 3        near enough to a whole number
     """
+    if x == 0:
+        return 0
     whole = math.floor(x)
     frac = x - whole
     if frac <= 0.25 + _EPS:
@@ -103,7 +106,7 @@ def round_range(x):
 
 def round_grams(x, step=50):
     """Mass in grams, rounded to a practical increment, minimum one step."""
-    return max(step, int(round(x / step)) * step)
+    return 0 if x == 0 else max(step, int(round(x / step)) * step)
 
 
 _ROUNDERS = {
@@ -116,39 +119,47 @@ _ROUNDERS = {
 
 
 def apply_rounding(x, rule):
-    """Apply one rounding rule by name; unknown rules round to 1/4."""
-    return _ROUNDERS.get(rule, round_quarter)(x)
+    """Round for presentation, preserving zero and rejecting invalid rules."""
+    if rule not in _ROUNDERS:
+        raise ValueError("Unknown rounding rule: %r" % rule)
+    if not math.isfinite(x) or x < 0:
+        raise ValueError("Quantity must be finite and non-negative")
+    return 0 if x == 0 else _ROUNDERS[rule](x)
 
 
 # ---------------------------------------------------------------------------
 # Rice-relative quantity calculation
 # ---------------------------------------------------------------------------
 
+def multiply(left, right):
+    """Multiply decimal input values before converting to a JSON number."""
+    return float(Decimal(str(left)) * Decimal(str(right)))
+
+
 def per_rice_quantity(rice_cups, per_rice, rule):
     """Quantity of one ingredient = rice x its own per-rice relationship."""
-    return apply_rounding(rice_cups * per_rice, rule)
+    return apply_rounding(multiply(rice_cups, per_rice), rule)
 
 
 def spice_quantity(rice_cups, spice, per_rice_by_spice, rule="count"):
     """Spice-driven rule: base comes from the spice level, then the rice."""
-    per_rice = per_rice_by_spice.get(
-        spice, per_rice_by_spice.get(sorted(per_rice_by_spice)[0], 0.5))
-    return apply_rounding(rice_cups * per_rice, rule)
+    per_rice = per_rice_by_spice[spice]
+    return apply_rounding(multiply(rice_cups, per_rice), rule)
 
 
 def liquid_cups(rice_cups, ratio, rule="quarter"):
     """Total cooking liquid target = rice x the rice type's liquid ratio."""
-    return apply_rounding(rice_cups * ratio, rule)
+    return apply_rounding(multiply(rice_cups, ratio), rule)
 
 
 def liquid_reserve(rice_cups, per_rice, rule="quarter"):
     """Hot liquid kept aside for mid-cooking adjustments."""
-    return apply_rounding(rice_cups * per_rice, rule)
+    return apply_rounding(multiply(rice_cups, per_rice), rule)
 
 
 def cooked_rice_cups(rice_cups, expansion, rule="half"):
     """Expected cooked volume = raw rice x the rice type's expansion."""
-    return apply_rounding(rice_cups * expansion, rule)
+    return apply_rounding(multiply(rice_cups, expansion), rule)
 
 
 # ---------------------------------------------------------------------------
@@ -159,11 +170,11 @@ def pot_batches(rice_cups, capacity_cups):
     """How many pots are needed if the batch exceeds one pot's capacity."""
     if capacity_cups <= 0:
         return 1
-    return max(1, int(math.ceil(rice_cups / float(capacity_cups))))
+    return max(1, int((Decimal(str(rice_cups)) / Decimal(str(capacity_cups))).to_integral_value(rounding=ROUND_CEILING)))
 
 
 def frying_batches(cooked_cups, capacity_cups):
     """Number of frying batches = ceil(cooked rice / pan capacity)."""
     if capacity_cups <= 0:
         return 1
-    return max(1, int(math.ceil(cooked_cups / float(capacity_cups))))
+    return pot_batches(cooked_cups, capacity_cups)

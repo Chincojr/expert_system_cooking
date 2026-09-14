@@ -1,131 +1,184 @@
-"""Rice-relative proportionality rules, loaded from ``proportions.json``.
+"""Validated recipe snapshots and atomic updates to the knowledge base."""
 
-THE CORE IDEA
--------------
-Rice is the most important ingredient. Every other ingredient defines its OWN
-independent relationship to rice - there is no shared "scaling factor".
-
-The relationships live in ``proportions.json`` (plain, dict-like JSON) so they
-can be inserted / modified / deleted the same way you would edit any JSON
-object, without touching any code. Recipes are independent and do NOT share
-parameters.
-
-Each ingredient entry supports:
-
-    "per_rice"          amount per 1 cup of rice (simple linear rule)
-    "per_rice_by_spice" spice-driven rules (special: "spice")
-    "special"           "liquid" | "protein" | "seasoning" | "to_taste"
-    "unit"              display unit
-    "rounding"          "count" | "half" | "quarter" | "range" | "grams"
-    "note"              free-text caveat shown in the UI
-
-The file is re-read on every call to :func:`load_proportions`, so edits are
-picked up without restarting anything (turn caching off via the module
-variable ``CACHE_SECONDS = 0``).
-"""
-
+from copy import deepcopy
+from hashlib import sha256
 import json
+import math
 import os
-import time
+from pathlib import Path
+import tempfile
 
-# Path to proportions.json (project root / package parent).
-_PROPORTIONS_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "proportions.json")
+from .recipes import DISHES, PARAM_SPECS
 
-CACHE_SECONDS = 0          # 0 -> always re-read (edit-friendly)
-_cache = {"t": 0.0, "data": None}
-
-REQUIRED_FIELDS = ("unit", "rounding")
-
-SPECIALS = ("spice", "liquid", "protein", "seasoning", "to_taste")
+_DEFAULT_PATH = Path(__file__).resolve().parent.parent / "proportions.json"
+_PROPORTIONS_PATH = os.environ.get("PROPORTIONS_PATH", str(_DEFAULT_PATH))
+ROUNDINGS = {"count", "half", "quarter", "range", "grams"}
+SPECIALS = {"spice", "liquid", "protein", "seasoning", "to_taste"}
+# Ingredients referenced by procedural rules cannot be deleted.
+REQUIRED = {
+    "jollof": {"tomatoes", "bell_peppers", "scotch_bonnet", "onions",
+               "tomato_paste", "vegetable_oil", "curry_powder", "thyme",
+               "seasoning_cubes", "bay_leaves", "stock", "protein"},
+    "fried_rice": {"carrots", "bell_peppers", "green_beans", "green_peas",
+                   "sweet_corn", "scotch_bonnet", "onions", "vegetable_oil",
+                   "curry_powder", "thyme", "seasoning_cubes", "stock", "protein"},
+}
 
 
 class ProportionsError(ValueError):
-    """Raised when proportions.json is missing, invalid or incomplete."""
+    """The knowledge base cannot safely produce a guide."""
+
+
+def _number(value, path, positive=False):
+    try:
+        finite = math.isfinite(value)
+    except (TypeError, OverflowError):
+        finite = False
+    if (isinstance(value, bool) or not isinstance(value, (int, float))
+            or not finite or value < 0
+            or (positive and value == 0)):
+        raise ProportionsError("%s must be a finite %s number" % (
+            path, "positive" if positive else "non-negative"))
+
+
+def validate_data(data):
+    """Validate an in-memory candidate before it can become active."""
+    if not isinstance(data, dict):
+        raise ProportionsError("Proportions must be a JSON object")
+    dishes = {k for k in data if not k.startswith("_")}
+    if dishes != set(DISHES):
+        raise ProportionsError("Proportions must define exactly jollof and fried_rice")
+    for dish in DISHES:
+        conf = data[dish]
+        if not isinstance(conf, dict):
+            raise ProportionsError("%s must be an object" % dish)
+        types, ingredients = conf.get("rice_types"), conf.get("ingredients")
+        if not isinstance(types, dict) or not isinstance(ingredients, dict):
+            raise ProportionsError("%s requires rice_types and ingredients objects" % dish)
+        choices = next(s["choices"] for s in PARAM_SPECS[dish] if s["name"] == "rice_type")
+        if set(types) != set(choices):
+            raise ProportionsError("%s rice_types must match supported rice choices" % dish)
+        for name, rt in types.items():
+            if not isinstance(rt, dict):
+                raise ProportionsError("%s rice type %s must be an object" % (dish, name))
+            for field in ("liquid_ratio", "expansion"):
+                _number(rt.get(field), "%s.%s.%s" % (dish, name, field), positive=True)
+        _number(conf.get("liquid_reserve_per_rice"), dish + ".liquid_reserve_per_rice")
+        missing = REQUIRED[dish] - set(ingredients)
+        if missing:
+            raise ProportionsError("%s is missing required ingredients: %s" % (dish, ", ".join(sorted(missing))))
+        if "rice" in ingredients:
+            raise ProportionsError("rice is the input base and cannot be redefined")
+        for key, rule in ingredients.items():
+            path = "%s.ingredients.%s" % (dish, key)
+            if not isinstance(rule, dict):
+                raise ProportionsError(path + " must be an object")
+            special = rule.get("special")
+            if special is not None and (not isinstance(special, str) or special not in SPECIALS):
+                raise ProportionsError(path + " has an unknown special rule")
+            for field in ("label", "unit", "note"):
+                if field in rule and not isinstance(rule[field], str):
+                    raise ProportionsError(path + "." + field + " must be text")
+            if special == "to_taste":
+                if key in REQUIRED[dish]:
+                    raise ProportionsError(path + " must have a numeric quantity")
+                continue
+            if (not isinstance(rule.get("unit"), str)
+                    or not isinstance(rule.get("rounding"), str)
+                    or rule["rounding"] not in ROUNDINGS):
+                raise ProportionsError(path + " requires a unit and a supported rounding rule")
+            expected = {"stock": "liquid", "protein": "protein", "scotch_bonnet": "spice"}.get(key)
+            if expected and special != expected:
+                raise ProportionsError(path + " must use special=" + expected)
+            if special == "liquid" and (rule["unit"] != "cups" or rule["rounding"] == "range"):
+                raise ProportionsError(path + " liquid must use cups and scalar rounding")
+            if special == "protein" and (rule["unit"] != "g" or rule["rounding"] != "grams"):
+                raise ProportionsError(path + " protein must use g and grams rounding")
+            if special == "spice":
+                levels = rule.get("per_rice_by_spice")
+                if not isinstance(levels, dict) or set(levels) != {"mild", "medium", "hot"}:
+                    raise ProportionsError(path + " requires mild, medium and hot ratios")
+                for level, value in levels.items():
+                    _number(value, path + "." + level)
+            elif special != "liquid":
+                _number(rule.get("per_rice"), path + ".per_rice")
+    return True
 
 
 def _load_raw():
-    now = time.time()
-    if CACHE_SECONDS > 0 and _cache["data"] is not None \
-            and now - _cache["t"] < CACHE_SECONDS:
-        return _cache["data"]
     try:
-        with open(_PROPORTIONS_PATH, "r", encoding="utf-8") as fh:
-            data = json.load(fh)
-    except (IOError, OSError) as exc:
-        raise ProportionsError(
-            "Cannot read proportions file %s: %s" % (_PROPORTIONS_PATH, exc))
-    except json.JSONDecodeError as exc:
-        raise ProportionsError(
-            "proportions.json is not valid JSON (line %d: %s)"
-            % (exc.lineno, exc.msg))
-    if not isinstance(data, dict):
-        raise ProportionsError("proportions.json must contain a JSON object")
-    _cache["t"], _cache["data"] = now, data
-    return data
+        with open(_PROPORTIONS_PATH, encoding="utf-8") as stream:
+            return json.load(stream)
+    except (OSError, ValueError) as exc:
+        raise ProportionsError("Cannot read proportions: %s" % exc) from exc
+
+
+def fingerprint(data):
+    try:
+        canonical = json.dumps(data, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    except (ValueError, TypeError) as exc:
+        raise ProportionsError("Proportions must contain finite JSON values") from exc
+    return sha256(canonical.encode()).hexdigest()
+
+
+def snapshot():
+    data = _load_raw()
+    validate_data(data)
+    return deepcopy(data), fingerprint(data)
+
+
+def save(data):
+    """Atomically publish a valid candidate; concurrent editors are last-write wins."""
+    validate_data(data)
+    path = Path(_PROPORTIONS_PATH)
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
+                                         prefix=path.name + ".", suffix=".tmp", delete=False) as stream:
+            temporary = stream.name
+            json.dump(data, stream, indent=2, allow_nan=False)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary and os.path.exists(temporary):
+            os.unlink(temporary)
+    return fingerprint(data)
+
+
+def initialize_storage():
+    """Seed an explicitly configured persistent volume on first startup."""
+    path = Path(_PROPORTIONS_PATH)
+    if path != _DEFAULT_PATH and not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with _DEFAULT_PATH.open(encoding="utf-8") as stream:
+            save(json.load(stream))
 
 
 def load_proportions(dish):
-    """Return the raw proportions dict for one dish (fresh from disk)."""
-    data = _load_raw()
+    data, _ = snapshot()
     if dish not in data:
-        raise ProportionsError(
-            "proportions.json has no entry for dish %r (found: %s)"
-            % (dish, ", ".join(k for k in data if not k.startswith("_"))))
+        raise ProportionsError("Unknown dish: %r" % dish)
     return data[dish]
 
 
 def list_dishes():
-    """Dish keys defined in proportions.json (leading '_' entries ignored)."""
-    return [k for k in _load_raw() if not k.startswith("_")]
+    return list(DISHES)
 
 
 def dish_ingredients(dish):
-    """Ordered [(key, rule_dict)] for a dish."""
-    props = load_proportions(dish)
-    return list(props.get("ingredients", {}).items())
+    return list(load_proportions(dish)["ingredients"].items())
 
 
 def rice_types(dish):
-    """{variety: {"liquid_ratio": ..., "expansion": ...}} for a dish."""
-    return load_proportions(dish).get("rice_types", {})
+    return load_proportions(dish)["rice_types"]
 
 
 def get_rice_type(dish, variety):
-    """Rice-type parameters (liquid ratio, expansion) for one variety."""
-    types = rice_types(dish)
-    if variety not in types:
-        raise ProportionsError(
-            "proportions.json (%s) has no rice type %r (found: %s)"
-            % (dish, variety, ", ".join(types)))
-    return types[variety]
+    return rice_types(dish)[variety]
 
 
 def validate(dish):
-    """Sanity-check one dish's rules; raises ProportionsError on problems."""
-    props = load_proportions(dish)
-    for section in ("rice_types", "ingredients"):
-        if section not in props or not isinstance(props[section], dict) \
-                or not props[section]:
-            raise ProportionsError(
-                "Dish %r is missing a non-empty '%s' section" % (dish, section))
-    for variety, rt in props["rice_types"].items():
-        if "liquid_ratio" not in rt:
-            raise ProportionsError(
-                "Rice type %r (dish %r) has no 'liquid_ratio'" % (variety, dish))
-    for key, rule in props["ingredients"].items():
-        special = rule.get("special")
-        if special == "spice":
-            if "per_rice_by_spice" not in rule:
-                raise ProportionsError(
-                    "Ingredient %r (dish %r) is spice-driven but has no "
-                    "'per_rice_by_spice'" % (key, dish))
-        elif special in ("liquid", "to_taste"):
-            pass                     # no numeric rule needed
-        else:
-            if "per_rice" not in rule:
-                raise ProportionsError(
-                    "Ingredient %r (dish %r) has no 'per_rice' value"
-                    % (key, dish))
+    load_proportions(dish)
     return True

@@ -14,7 +14,8 @@ sorts the Step facts by ``order``, so the guide is always in the correct
 sequence even though experta may fire the rules in any order.
 """
 
-from experta import KnowledgeEngine, Rule, NOT
+from experta import NOT
+from .audit import AuditedEngine as KnowledgeEngine, AuditedRule as Rule
 
 from .facts import Flag, Step
 from .scaling import fmt, qty
@@ -60,7 +61,7 @@ class JollofRiceEngine(KnowledgeEngine):
                         fmt(c["liquid_ratio"]), c["rice_type"]))
         lines.append("  - hot liquid reserve for adjustments: %s"
                      % qty(c["liquid_reserve"], "cups"))
-        if c["protein"] == "none":
+        if self.decide("protein == none", c["protein"] == "none", protein=c["protein"]):
             lines.append("  - protein: none (vegetarian - use water/veg stock)")
         else:
             lines.append("  - protein: %s (%s), cooked separately and its stock "
@@ -79,10 +80,10 @@ class JollofRiceEngine(KnowledgeEngine):
                   "tomatoes (%s), bell peppers (%s), scotch bonnet (%s) and enough "
                   "onion (%s) for blending into pieces. Slice the rest of the onion "
                   "for frying - keep the two portions separate."
-                  % (qty(c["ing"]["tomatoes"]["amount"], "medium"),
-                     fmt(c["ing"]["bell_peppers"]["amount"]),
-                     fmt(c["ing"]["scotch_bonnet"]["amount"]),
-                     qty(c["ing"]["onions"]["amount"], "medium")))))
+                  % (qty(c["ing"]["tomatoes"]["amount"], c["ing"]["tomatoes"]["unit"]),
+                     qty(c["ing"]["bell_peppers"]["amount"], c["ing"]["bell_peppers"]["unit"]),
+                     qty(c["ing"]["scotch_bonnet"]["amount"], c["ing"]["scotch_bonnet"]["unit"]),
+                     qty(c["ing"]["onions"]["amount"], c["ing"]["onions"]["unit"])))))
 
     # ---- Step 3: blend the pepper mix -----------------------------------
     @Rule(Flag(name="ready"), NOT(Step(order=30)))
@@ -94,7 +95,7 @@ class JollofRiceEngine(KnowledgeEngine):
                   "blending onion until smooth. If it is too thick to blend, add "
                   "a little water and blend again - WRITE DOWN any water added, "
                   "it counts toward the %s total liquid."
-                  % (fmt(c["ing"]["scotch_bonnet"]["amount"]),
+                  % (qty(c["ing"]["scotch_bonnet"]["amount"], c["ing"]["scotch_bonnet"]["unit"]),
                      qty(c["liquid_cups"], "cups")))))
 
     # ---- Step 4: protein + stock (only when a protein is chosen) ---------
@@ -120,8 +121,8 @@ class JollofRiceEngine(KnowledgeEngine):
                   "sliced onions until softened and fragrant, then stir in the %s "
                   "of tomato paste and fry for about 3-5 minutes, stirring "
                   "regularly, until it darkens and the raw smell is gone."
-                  % (qty(c["ing"]["vegetable_oil"]["amount"], "cups"),
-                     qty(c["ing"]["tomato_paste"]["amount"], "tbsp")))))
+                  % (qty(c["ing"]["vegetable_oil"]["amount"], c["ing"]["vegetable_oil"]["unit"]),
+                     qty(c["ing"]["tomato_paste"]["amount"], c["ing"]["tomato_paste"]["unit"])))))
 
     # ---- Step 6: cook the blended pepper mix ----------------------------
     @Rule(Flag(name="ready"), NOT(Step(order=60)))
@@ -140,7 +141,7 @@ class JollofRiceEngine(KnowledgeEngine):
     def season_and_liquid(self):
         c = self.calc
         ing = c["ing"]
-        if c["protein"] == "none":
+        if self.decide("protein == none", c["protein"] == "none", protein=c["protein"]):
             liquid_source = "water or vegetable stock"
         else:
             liquid_source = "the reserved protein stock (top up with water)"
@@ -151,10 +152,10 @@ class JollofRiceEngine(KnowledgeEngine):
                   "water + stock) is about %s - that is rice x %s for %s rice. "
                   "Taste now and adjust the seasoning BEFORE the rice goes in; "
                   "reduce the cubes/salt if the stock is already well seasoned."
-                  % (qty(ing["curry_powder"]["amount"], "tbsp"),
-                     qty(ing["thyme"]["amount"], "tsp"),
-                     qty(ing["seasoning_cubes"]["amount"], "cubes"),
-                     fmt(ing["bay_leaves"]["amount"]),
+                  % (qty(ing["curry_powder"]["amount"], ing["curry_powder"]["unit"]),
+                     qty(ing["thyme"]["amount"], ing["thyme"]["unit"]),
+                     qty(ing["seasoning_cubes"]["amount"], ing["seasoning_cubes"]["unit"]),
+                     qty(ing["bay_leaves"]["amount"], ing["bay_leaves"]["unit"]),
                      liquid_source,
                      qty(c["liquid_cups"], "cups"),
                      fmt(c["liquid_ratio"]), c["rice_type"]))))
@@ -168,7 +169,8 @@ class JollofRiceEngine(KnowledgeEngine):
                 "pot tightly (foil under the lid helps trap steam), reduce the "
                 "heat to medium-low, and cook for about 20-30 minutes - the goal "
                 "at this point is simply that the rice softens.")
-        if c["pot_batches"] > 1:
+        if self.decide("pot_batches > 1", c["pot_batches"] > 1,
+                       pot_batches=c["pot_batches"], rice_cups=c["rice_cups"], capacity=c["pot_capacity"]):
             text += ("\n  NOTE: %s cup(s) of rice is more than one pot of %s cup(s) "
                      "cooks well. Divide into %d batches so the rice steams "
                      "evenly - do not overfill a single pot."
@@ -213,10 +215,13 @@ class JollofRiceEngine(KnowledgeEngine):
     # ---- Step 11: serve --------------------------------------------------
     @Rule(Flag(name="ready"), NOT(Step(order=110)))
     def serve(self):
+        side = ""
+        if self.decide("protein != none", self.calc["protein"] != "none", protein=self.calc["protein"]):
+            side = " with the cooked protein on the side"
         self.declare(Step(
             order=110, phase="Serve",
             text=("Remove the bay leaves, fluff the rice gently and serve hot "
-                  "with the fried protein on the side. Enjoy your jollof rice!")))
+                  "%s. Enjoy your jollof rice!" % side)))
 
 
 class FriedRiceEngine(KnowledgeEngine):
@@ -240,7 +245,7 @@ class FriedRiceEngine(KnowledgeEngine):
                         fmt(c["liquid_ratio"]), c["rice_type"]))
         lines.append("  - hot liquid reserve: %s"
                      % qty(c["liquid_reserve"], "cups"))
-        if c["protein"] == "none":
+        if self.decide("protein == none", c["protein"] == "none", protein=c["protein"]):
             lines.append("  - protein: none (vegetarian)")
         else:
             lines.append("  - protein: %s (%s), cooked before frying"
@@ -268,12 +273,12 @@ class FriedRiceEngine(KnowledgeEngine):
                   "Group firmer vegetables (carrot, green beans) for the earlier "
                   "frying stage and softer ones (peas, corn, peppers) for later."
                   % (c["rice_type"],
-                     qty(ing["carrots"]["amount"], "cups"),
-                     qty(ing["green_beans"]["amount"], "cups"),
-                     qty(ing["bell_peppers"]["amount"], "cups"),
-                     qty(ing["green_peas"]["amount"], "cups"),
-                     qty(ing["sweet_corn"]["amount"], "cups"),
-                     qty(ing["onions"]["amount"], "medium")))))
+                     qty(ing["carrots"]["amount"], ing["carrots"]["unit"]),
+                     qty(ing["green_beans"]["amount"], ing["green_beans"]["unit"]),
+                     qty(ing["bell_peppers"]["amount"], ing["bell_peppers"]["unit"]),
+                     qty(ing["green_peas"]["amount"], ing["green_peas"]["unit"]),
+                     qty(ing["sweet_corn"]["amount"], ing["sweet_corn"]["unit"]),
+                     qty(ing["onions"]["amount"], ing["onions"]["unit"])))))
 
     # ---- Step 3: cook the protein (only when chosen) --------------------
     @Rule(Flag(name="protein_present"), NOT(Step(order=30)))
@@ -348,7 +353,7 @@ class FriedRiceEngine(KnowledgeEngine):
     def fry_onions_protein(self):
         c = self.calc
         protein_sentence = ""
-        if c["protein"] != "none":
+        if self.decide("protein != none", c["protein"] != "none", protein=c["protein"]):
             protein_sentence = (" Add the cooked %s and toss briefly to pick up "
                                 "the oil and flavour." % c["protein"])
         self.declare(Step(
@@ -356,7 +361,7 @@ class FriedRiceEngine(KnowledgeEngine):
             text=("Check the pan can hold the ingredients for this stage, then "
                   "heat %s of vegetable oil in a wide pan or wok over medium "
                   "heat. Fry the reserved onions until softened and fragrant.%s"
-                  % (qty(c["ing"]["vegetable_oil"]["amount"], "tbsp"),
+                  % (qty(c["ing"]["vegetable_oil"]["amount"], c["ing"]["vegetable_oil"]["unit"]),
                      protein_sentence))))
 
     # ---- Step 9: fry the vegetables -------------------------------------
@@ -373,12 +378,12 @@ class FriedRiceEngine(KnowledgeEngine):
                   "just-tender: if they soften too much or release a lot of "
                   "liquid, raise the heat briefly and finish quickly - soggy "
                   "vegetables make soggy fried rice."
-                  % (qty(ing["carrots"]["amount"], "cups"),
-                     qty(ing["green_beans"]["amount"], "cups"),
-                     qty(ing["green_peas"]["amount"], "cups"),
-                     qty(ing["sweet_corn"]["amount"], "cups"),
-                     qty(ing["bell_peppers"]["amount"], "cups"),
-                     fmt(ing["scotch_bonnet"]["amount"])))))
+                  % (qty(ing["carrots"]["amount"], ing["carrots"]["unit"]),
+                     qty(ing["green_beans"]["amount"], ing["green_beans"]["unit"]),
+                     qty(ing["green_peas"]["amount"], ing["green_peas"]["unit"]),
+                     qty(ing["sweet_corn"]["amount"], ing["sweet_corn"]["unit"]),
+                     qty(ing["bell_peppers"]["amount"], ing["bell_peppers"]["unit"]),
+                     qty(ing["scotch_bonnet"]["amount"], ing["scotch_bonnet"]["unit"])))))
 
     # ---- Step 10: season the vegetables ---------------------------------
     @Rule(Flag(name="ready"), NOT(Step(order=100)))
@@ -393,9 +398,9 @@ class FriedRiceEngine(KnowledgeEngine):
                   "cubes have their own adjustment rule, not a blind scale. If "
                   "undersalted, add a little at a time; if oversalted, stop "
                   "adding salty stock."
-                  % (qty(ing["curry_powder"]["amount"], "tbsp"),
-                     qty(ing["thyme"]["amount"], "tsp"),
-                     qty(ing["seasoning_cubes"]["amount"], "cubes")))))
+                  % (qty(ing["curry_powder"]["amount"], ing["curry_powder"]["unit"]),
+                     qty(ing["thyme"]["amount"], ing["thyme"]["unit"]),
+                     qty(ing["seasoning_cubes"]["amount"], ing["seasoning_cubes"]["unit"])))))
 
     # ---- Step 11: combine rice + vegetables -----------------------------
     @Rule(Flag(name="ready"), NOT(Step(order=110)))
@@ -407,7 +412,9 @@ class FriedRiceEngine(KnowledgeEngine):
                 "the grains stay whole and the vegetables spread evenly. If the "
                 "rice is too dry to combine, sprinkle a little hot stock; if it "
                 "is too wet, let the excess steam off before adding more.")
-        if c["frying_batches"] > 1:
+        if self.decide("frying_batches > 1", c["frying_batches"] > 1,
+                       frying_batches=c["frying_batches"], cooked_cups_raw=c["cooked_cups_raw"],
+                       capacity=c["frying_capacity"]):
             text += ("\n  NOTE: about %s of cooked rice is more than one %s "
                      "frying batch. Divide into %d batches - do NOT overload "
                      "the pan or simply cook it longer."
@@ -447,10 +454,11 @@ class FriedRiceEngine(KnowledgeEngine):
     def finish(self):
         c = self.calc
         optional = ""
-        if "spring_onions" in c["ing"]:
+        if self.decide("spring_onions in ingredients", "spring_onions" in c["ing"],
+                       spring_onions_present="spring_onions" in c["ing"]):
             optional = (" Stir in the spring onions (%s) at the very end so they "
                         "stay fresh."
-                        % qty(c["ing"]["spring_onions"]["amount"], "cups"))
+                        % qty(c["ing"]["spring_onions"]["amount"], c["ing"]["spring_onions"]["unit"]))
         self.declare(Step(
             order=140, phase="Serve",
             text=("Turn off the heat once the rice reaches the required "

@@ -137,8 +137,10 @@ def test_jollof_rice_relative_amounts():
 def test_fried_rice_rice_relative_amounts():
     plan = build_plan("fried_rice", {"rice_cups": 2})
     c = plan["calc"]
-    # carrots: 2 x 0.25 = 0.5 cups
-    assert c["ing"]["carrots"]["amount"] == 0.5
+    # Current knowledge base: 2 x 0.10 = 0.20 stick -> nearest quarter, 0.25.
+    assert c["ing"]["carrots"]["raw_amount"] == 0.2
+    assert c["ing"]["carrots"]["amount"] == 0.25
+    assert c["ing"]["carrots"]["unit"] == "stick"
     # oil (tbsp, range): 2 x 0.75 = 1.5 -> (1, 2) displayed "1-2 tbsp"
     assert c["ing"]["vegetable_oil"]["amount"] == (1, 2)
     oil = _ingredient(plan, "vegetable_oil")

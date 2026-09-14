@@ -11,7 +11,16 @@ which can be edited like any dict/JSON without touching code.
 Public entry point: :func:`expertcook.planner.build_plan`.
 """
 
-from .planner import build_plan  # noqa: F401
+# Experta 1.9.4 requires frozendict 1.2, whose Mapping import predates Python
+# 3.10. Restore that alias before importing Experta instead of installing an
+# incompatible dependency version or modifying third-party packages on disk.
+import collections
+import collections.abc
+
+if not hasattr(collections, "Mapping"):
+    collections.Mapping = collections.abc.Mapping
+
+from .planner import build_plan  # noqa: F401,E402
 from .recipes import DISHES, PARAM_SPECS  # noqa: F401
 from . import proportions  # noqa: F401
 

@@ -118,6 +118,23 @@
   }
   footer { text-align: center; color: var(--muted); font-size: 12.5px; padding: 20px; }
   .hidden { display: none; }
+  details { margin-top: 10px; font-size: 13px; }
+  summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; }
+  .table-scroll { overflow-x: auto; }
+  .audit-record { padding: 12px 0; border-bottom: 1px solid var(--border); font-weight: 400; }
+  .audit-record:last-child { border-bottom: 0; }
+  .audit-fields { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 9px 14px; margin: 0; font-size: 13px; }
+  .audit-fields dt { font-weight: 600; color: var(--muted); }
+  .audit-fields dd { margin: 0; overflow-wrap: anywhere; }
+  .audit-fields ul { margin: 0; padding-left: 17px; }
+  .audit-fields li + li { margin-top: 4px; }
+  .audit-technical summary { color: var(--muted); font-weight: 400; }
+  @media (max-width: 600px) {
+    .audit-fields { grid-template-columns: 1fr; gap: 4px; }
+    .audit-fields dd { margin-bottom: 9px; }
+    table.ing { min-width: 580px; }
+  }
 </style>
 </head>
 <body>
@@ -162,15 +179,24 @@
 
       <div class="card">
         <h2>Ingredients <span style="font-weight:400;color:var(--muted);font-size:13px">(all relative to the rice)</span></h2>
-        <table class="ing">
-          <thead><tr><th>Ingredient</th><th>Quantity</th><th>Note</th></tr></thead>
+        <div class="table-scroll"><table class="ing">
+          <thead><tr><th>Ingredient</th><th>Quantity</th><th>Calculation and note</th></tr></thead>
           <tbody id="ingredients"></tbody>
-        </table>
+        </table></div>
       </div>
 
       <div class="card">
         <h2>Step-by-step guide</h2>
         <div class="steps" id="steps"></div>
+      </div>
+      <div class="card" id="audit-card">
+        <h2>How this guide was generated</h2>
+        <p class="hint">These rules generate cooking advice. The system does not observe your food while it cooks.</p>
+        <p id="audit-summary"></p>
+        <details><summary>Rules in the order they fired</summary><div id="audit-firings"></div></details>
+        <details><summary>Rules that did not fire</summary><div id="audit-skipped"></div></details>
+        <details><summary>Inputs and calculation summary</summary><div id="audit-config"></div></details>
+        <button class="secondary" id="download-audit" onclick="downloadAudit()">Download guide and audit JSON</button>
       </div>
     </div>
   </section>
@@ -181,11 +207,16 @@
       <h2>Rice-relative proportionality rules</h2>
       <p class="hint" style="margin-bottom:14px">
         Each ingredient has its own independent relationship to rice (no shared factor).
-        Edit this JSON like any dict - insert, modify or delete rules - then save.
+        Edit ratios or optional ingredients, then save. Ingredients used by cooking steps are required.
         Quantities are <b>per 1 cup of rice</b>. Changes apply immediately to new guides.
       </p>
       <div id="props-status"></div>
       <textarea id="proportions-editor" spellcheck="false"></textarea>
+      <div class="field">
+        <label for="admin-token">Administrator token to save changes</label>
+        <input id="admin-token" type="password" autocomplete="off" placeholder="Provided by the site owner">
+        <p class="hint">Used only for saving rules; it is not included in exported guides.</p>
+      </div>
       <div class="actions">
         <button class="primary" onclick="saveProportions()">Save rules</button>
         <button class="secondary" onclick="loadProportions()">Reload</button>
@@ -196,9 +227,11 @@
 
 <footer>ExpertCook - an experta rule-based expert system. Jollof Rice &amp; Nigerian Fried Rice.</footer>
 
+<script src="/static/audit-view.js"></script>
 <script>
 let DISHES = [];
 let currentDish = null;
+let currentPlan = null;
 
 async function fetchJSON(url, options) {
   const res = await fetch(url, options);
@@ -298,17 +331,21 @@ async function generate() {
     status.textContent = '';
     document.getElementById('result').classList.remove('hidden');
     document.getElementById('error-box').innerHTML =
-      '<div class="error">' + err.message + '</div>';
+      '<div class="error">' + esc(err.message) + '</div>';
     document.getElementById('plan-title').textContent = '';
     document.getElementById('summary').innerHTML = '';
     document.getElementById('ingredients').innerHTML = '';
     document.getElementById('steps').innerHTML = '';
+    document.getElementById('audit-card').classList.add('hidden');
+    currentPlan = null;
   } finally {
     btn.disabled = false;
   }
 }
 
 function renderPlan(plan) {
+  currentPlan = plan;
+  document.getElementById('audit-card').classList.remove('hidden');
   document.getElementById('result').classList.remove('hidden');
   document.getElementById('error-box').innerHTML = '';
   document.getElementById('plan-title').textContent = plan.dish;
@@ -328,7 +365,7 @@ function renderPlan(plan) {
     if (ing.key === 'rice') tr.className = 'rice';
     const amount = ing.amount === null ? 'to taste' : ing.amount + (ing.unit ? ' ' + ing.unit : '');
     tr.innerHTML = '<td>' + esc(ing.label) + '</td><td>' + esc(amount) + '</td>' +
-                   '<td class="note">' + esc(ing.note || '') + '</td>';
+                   '<td>' + calculationHTML(ing) + '<p class="hint">' + esc(ing.note || '') + '</p></td>';
     tbody.appendChild(tr);
   });
 
@@ -339,10 +376,36 @@ function renderPlan(plan) {
     div.className = 'step';
     div.innerHTML = '<div class="num"></div><div class="body">' +
       (step.phase ? '<div class="phase">' + esc(step.phase) + '</div>' : '') +
-      '<div class="text">' + esc(step.text) + '</div></div>';
+      '<div class="text">' + esc(step.text) + '</div>' +
+      '<details><summary>Why this step?</summary>' +
+      firingHTML(plan.audit.firings.find(f => f.sequence === step.firing_sequence)) + '</details></div>';
     steps.appendChild(div);
   });
+  const audit = plan.audit;
+  document.getElementById('audit-summary').textContent =
+    audit.firings.length + ' cooking rules fired · Generated ' + AuditView.date(audit.generated_at);
+  document.getElementById('audit-firings').innerHTML = audit.firings.map(firingHTML).join('');
+  document.getElementById('audit-skipped').innerHTML = audit.not_fired.map(r => AuditView.skipped(r, plan)).join('') || '<p>All rules fired.</p>';
+  document.getElementById('audit-config').innerHTML = AuditView.overview(plan);
   document.getElementById('result').scrollIntoView({behavior: 'smooth'});
+}
+
+function calculationHTML(ing) {
+  return AuditView.calculation(ing);
+}
+
+function firingHTML(f) {
+  return AuditView.firing(f, currentPlan);
+}
+
+function downloadAudit() {
+  if (!currentPlan) return;
+  const url = URL.createObjectURL(new Blob([JSON.stringify(currentPlan, null, 2)], {type: 'application/json'}));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'expertcook-' + currentPlan.audit.run_id + '.json';
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 async function loadProportions() {
@@ -352,7 +415,7 @@ async function loadProportions() {
     document.getElementById('proportions-editor').value = JSON.stringify(data, null, 2);
     status.innerHTML = '';
   } catch (err) {
-    status.innerHTML = '<div class="error">' + err.message + '</div>';
+    status.innerHTML = '<div class="error">' + esc(err.message) + '</div>';
   }
 }
 
@@ -362,18 +425,19 @@ async function saveProportions() {
   try {
     data = JSON.parse(document.getElementById('proportions-editor').value);
   } catch (e) {
-    status.innerHTML = '<div class="error">Invalid JSON: ' + e.message + '</div>';
+    status.innerHTML = '<div class="error">Invalid JSON: ' + esc(e.message) + '</div>';
     return;
   }
   try {
     await fetchJSON('/api/proportions', {
       method: 'PUT',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + document.getElementById('admin-token').value},
       body: JSON.stringify(data)
     });
     status.innerHTML = '<div class="banner-ok">Saved. New guides will use the updated rules.</div>';
   } catch (err) {
-    status.innerHTML = '<div class="error">' + err.message + '</div>';
+    status.innerHTML = '<div class="error">' + esc(err.message) + '</div>';
   }
 }
 
@@ -385,7 +449,7 @@ function esc(s) {
 
 init().catch(err => {
   document.getElementById('dish-tabs').innerHTML =
-    '<div class="error">Failed to load dishes: ' + err.message + '</div>';
+    '<div class="error">Failed to load dishes: ' + esc(err.message) + '</div>';
 });
 </script>
 </body>
