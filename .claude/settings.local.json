@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./venv/Scripts/python.exe --version)",
+      "Bash(./venv/Scripts/python.exe -c \"import experta; print\\('experta OK', experta.__version__\\)\")",
+      "Bash(./venv/Scripts/python.exe -c \"import tkinter; print\\('tkinter OK', tkinter.TkVersion\\)\")",
+      "Bash(./venv/Scripts/python.exe -c \"import flask; print\\('flask OK'\\)\")",
+      "Bash(./venv/Scripts/python.exe run.py)"
+    ]
+  }
+}
