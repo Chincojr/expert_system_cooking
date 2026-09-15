@@ -1,0 +1,231 @@
+{
+  "_help": "Rice-relative proportionality rules. RICE IS THE BASE INGREDIENT: every other ingredient defines its OWN independent relationship to rice via 'per_rice' (amount per 1 cup of rice). Recipes are independent and do NOT share parameters. Insert / modify / delete entries freely - the system picks up changes on the next request (or restart the server). Special ingredients: 'spice' (per_rice_by_spice), 'liquid' (amount = rice x rice_types[rice_type].liquid_ratio), 'protein' (per_rice grams applied to the chosen protein), 'seasoning' (normal per_rice but never scaled blindly - see note), 'to_taste' (no fixed quantity). Rounding rules: 'count' (whole items), 'half' (nearest 1/2), 'quarter' (nearest 1/4), 'range' (e.g. 2-3 tbsp when the value is fractional), 'grams' (nearest 50 g). These values are MOCKS - tune them to taste.",
+  "fried_rice": {
+    "description": "Nigerian Fried Rice - every quantity is relative to the rice",
+    "ingredients": {
+      "bell_peppers": {
+        "label": "Green bell peppers",
+        "per_rice": 0.10,
+        "rounding": "quarter",
+        "unit": "bulb"
+      },
+      "carrots": {
+        "label": "Carrots",
+        "per_rice": 0.10,
+        "rounding": "quarter",
+        "unit": "stick"
+      },
+      "curry_powder": {
+        "label": "Curry powder",
+        "per_rice": 0.25,
+        "rounding": "range",
+        "unit": "tbsp"
+      },
+      "green_beans": {
+        "label": "Green beans",
+        "per_rice": 0.35,
+        "rounding": "quarter",
+        "unit": "cups"
+      },
+      "green_peas": {
+        "label": "Green peas",
+        "per_rice": 0.35,
+        "rounding": "quarter",
+        "unit": "cups"
+      },
+      "onions": {
+        "label": "Onions",
+        "per_rice": 1,
+        "rounding": "count",
+        "unit": "bulbs"
+      },
+      "protein": {
+        "label": "Protein (chicken / liver)",
+        "note": "Grams of protein per cup of rice; 0 when protein is 'none'",
+        "per_rice": 150,
+        "rounding": "grams",
+        "special": "protein",
+        "unit": "g"
+      },
+      "salt": {
+        "label": "Salt",
+        "note": "Account for salt already in the stock and seasoning cubes",
+        "special": "to_taste"
+      },
+      "scotch_bonnet": {
+        "label": "Scotch bonnet pepper",
+        "note": "Driven by the spice level, then by the rice",
+        "per_rice_by_spice": {
+          "hot": 1.0,
+          "medium": 0.5,
+          "mild": 0.25
+        },
+        "rounding": "count",
+        "special": "spice",
+        "unit": ""
+      },
+      "seasoning_cubes": {
+        "label": "Seasoning cubes",
+        "note": "Reduce if the stock is already well seasoned",
+        "per_rice": 1.0,
+        "rounding": "half",
+        "special": "seasoning",
+        "unit": "cubes"
+      },
+      "spring_onions": {
+        "label": "Spring onions (optional)",
+        "per_rice": 0.125,
+        "rounding": "quarter",
+        "unit": "cups"
+      },
+      "stock": {
+        "label": "Stock (total cooking liquid)",
+        "note": "Total liquid target - subtract liquid already in the stock",
+        "rounding": "quarter",
+        "special": "liquid",
+        "unit": "cups"
+      },
+      "sweet_corn": {
+        "label": "Sweet corn",
+        "per_rice": 0.25,
+        "rounding": "quarter",
+        "unit": "cups"
+      },
+      "thyme": {
+        "label": "Thyme",
+        "per_rice": 0.5,
+        "rounding": "range",
+        "unit": "tsp"
+      },
+      "vegetable_oil": {
+        "label": "Vegetable oil",
+        "per_rice": 0.75,
+        "rounding": "range",
+        "unit": "tbsp"
+      }
+    },
+    "liquid_reserve_per_rice": 0.25,
+    "rice_types": {
+      "basmati": {
+        "expansion": 3.25,
+        "liquid_ratio": 1.25
+      },
+      "other": {
+        "expansion": 2.75,
+        "liquid_ratio": 1.75
+      },
+      "parboiled": {
+        "expansion": 3.0,
+        "liquid_ratio": 1.5
+      }
+    }
+  },
+  "jollof": {
+    "description": "Jollof Rice - every quantity is relative to the rice",
+    "ingredients": {
+      "bay_leaves": {
+        "label": "Bay leaves",
+        "per_rice": 0.67,
+        "rounding": "count",
+        "unit": ""
+      },
+      "bell_peppers": {
+        "label": "Bell peppers (tatashe)",
+        "per_rice": 0.67,
+        "rounding": "count",
+        "unit": ""
+      },
+      "curry_powder": {
+        "label": "Curry powder",
+        "per_rice": 0.33,
+        "rounding": "range",
+        "unit": "tbsp"
+      },
+      "onions": {
+        "label": "Onions",
+        "per_rice": 0.67,
+        "rounding": "count",
+        "unit": "medium"
+      },
+      "protein": {
+        "label": "Protein (chicken / beef / goat)",
+        "note": "Grams of protein per cup of rice; 0 when protein is 'none'",
+        "per_rice": 167,
+        "rounding": "grams",
+        "special": "protein",
+        "unit": "g"
+      },
+      "salt": {
+        "label": "Salt",
+        "note": "Account for salt already in the stock and seasoning cubes",
+        "special": "to_taste"
+      },
+      "scotch_bonnet": {
+        "label": "Scotch bonnet peppers",
+        "note": "Driven by the spice level, then by the rice",
+        "per_rice_by_spice": {
+          "hot": 1.33,
+          "medium": 0.67,
+          "mild": 0.33
+        },
+        "rounding": "count",
+        "special": "spice",
+        "unit": ""
+      },
+      "seasoning_cubes": {
+        "label": "Seasoning cubes",
+        "note": "Reduce if the stock is already well seasoned",
+        "per_rice": 0.67,
+        "rounding": "half",
+        "special": "seasoning",
+        "unit": "cubes"
+      },
+      "stock": {
+        "label": "Stock (total cooking liquid)",
+        "note": "Total liquid target - subtract liquid already in the sauce and any blender water",
+        "rounding": "quarter",
+        "special": "liquid",
+        "unit": "cups"
+      },
+      "thyme": {
+        "label": "Thyme",
+        "per_rice": 0.33,
+        "rounding": "range",
+        "unit": "tsp"
+      },
+      "tomato_paste": {
+        "label": "Tomato paste",
+        "per_rice": 0.67,
+        "rounding": "range",
+        "unit": "tbsp"
+      },
+      "tomatoes": {
+        "label": "Tomatoes",
+        "per_rice": 1.33,
+        "rounding": "count",
+        "unit": "medium"
+      },
+      "vegetable_oil": {
+        "label": "Vegetable oil",
+        "per_rice": 0.17,
+        "rounding": "quarter",
+        "unit": "cups"
+      }
+    },
+    "liquid_reserve_per_rice": 0.25,
+    "rice_types": {
+      "basmati": {
+        "expansion": 3.0,
+        "liquid_ratio": 1.25
+      },
+      "other": {
+        "expansion": 2.5,
+        "liquid_ratio": 1.75
+      },
+      "parboiled": {
+        "expansion": 2.75,
+        "liquid_ratio": 1.5
+      }
+    }
+  }
+}

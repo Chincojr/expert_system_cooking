@@ -1,0 +1,1267 @@
+{
+  "dish": "Jollof Rice",
+  "dish_key": "jollof",
+  "params": {
+    "rice_cups": 12.0,
+    "rice_type": "parboiled",
+    "style": "regular",
+    "spice": "medium",
+    "protein": "none",
+    "pot_capacity": 10.0
+  },
+  "summary": [
+    "Rice (the base): 12 cups of parboiled rice",
+    "Every other quantity is derived from the rice using its own independent proportionality rule.",
+    "Total cooking liquid target: 18 cups (ratio 1.5)",
+    "Hot liquid reserve: 3 cups",
+    "Style: regular   Protein: none",
+    "Pot batches: 2 (batch exceeds one pot)"
+  ],
+  "steps": [
+    {
+      "order": 10,
+      "phase": "Overview",
+      "text": "Jollof Rice for 12 cup(s) of parboiled rice.\nRice is the base: every other quantity below is derived from it using its own independent proportionality rule.\n\nIngredients (all relative to the rice):\n  - RICE (base): 12 cups  (the base ingredient - everything is relative to it)\n  - Bay leaves: 8\n  - Bell peppers (tatashe): 8\n  - Curry powder: 4 tbsp\n  - Onions: 8 medium\n  - Protein (chicken / beef / goat): 0 g  (Grams of protein per cup of rice; 0 when protein is 'none')\n  - Salt: to taste  (Account for salt already in the stock and seasoning cubes)\n  - Scotch bonnet peppers: 8  (Driven by the spice level, then by the rice)\n  - Seasoning cubes: 8 cubes  (Reduce if the stock is already well seasoned)\n  - Stock (total cooking liquid): 18 cups  (Total liquid target - subtract liquid already in the sauce and any blender water)\n  - Thyme: 4 tsp\n  - Tomato paste: 8 tbsp\n  - Tomatoes: 16 medium\n  - Vegetable oil: 2 cups\n  - total cooking liquid target: 18 cups (ratio 1.5 for parboiled rice), minus liquid already in the sauce\n  - hot liquid reserve for adjustments: 3 cups\n  - protein: none (vegetarian - use water/veg stock)",
+      "rule_id": "JollofRiceEngine.overview",
+      "firing_sequence": 4
+    },
+    {
+      "order": 20,
+      "phase": "Prepare",
+      "text": "Measure out every calculated quantity above. Wash the rice in cold water until it runs clear, then drain. Wash and cut the tomatoes (16 medium), bell peppers (8), scotch bonnet (8) and enough onion (8 medium) for blending into pieces. Slice the rest of the onion for frying - keep the two portions separate.",
+      "rule_id": "JollofRiceEngine.prepare",
+      "firing_sequence": 10
+    },
+    {
+      "order": 30,
+      "phase": "Blend",
+      "text": "Blend the tomatoes, bell peppers, 8 scotch bonnet and the blending onion until smooth. If it is too thick to blend, add a little water and blend again - WRITE DOWN any water added, it counts toward the 18 cups total liquid.",
+      "rule_id": "JollofRiceEngine.blend",
+      "firing_sequence": 3
+    },
+    {
+      "order": 50,
+      "phase": "Fry base",
+      "text": "Heat 2 cups of vegetable oil in the pot over medium heat. Fry the sliced onions until softened and fragrant, then stir in the 8 tbsp of tomato paste and fry for about 3-5 minutes, stirring regularly, until it darkens and the raw smell is gone.",
+      "rule_id": "JollofRiceEngine.fry_base",
+      "firing_sequence": 2
+    },
+    {
+      "order": 60,
+      "phase": "Cook sauce",
+      "text": "Add the blended pepper mix, stir thoroughly and cook uncovered over medium heat for about 15-20 minutes, until the sauce thickens and the raw tomato taste reduces. If it is still watery, keep reducing; if it starts sticking, lower the heat and stir. The sauce's volume and consistency feed the liquid calculation in the next step.",
+      "rule_id": "JollofRiceEngine.reduce_sauce",
+      "firing_sequence": 8
+    },
+    {
+      "order": 70,
+      "phase": "Season",
+      "text": "Stir in 4 tbsp curry powder, 4 tsp thyme, 8 cubes seasoning cube(s) and 8 bay leaf/leaves. Add water or vegetable stock until the TOTAL liquid (sauce + blender water + stock) is about 18 cups - that is rice x 1.5 for parboiled rice. Taste now and adjust the seasoning BEFORE the rice goes in; reduce the cubes/salt if the stock is already well seasoned.",
+      "rule_id": "JollofRiceEngine.season_and_liquid",
+      "firing_sequence": 7
+    },
+    {
+      "order": 80,
+      "phase": "Cook rice",
+      "text": "Add the washed rice and stir until every grain is coated. The liquid should sit just at or slightly above the rice. Cover the pot tightly (foil under the lid helps trap steam), reduce the heat to medium-low, and cook for about 20-30 minutes - the goal at this point is simply that the rice softens.\n  NOTE: 12 cup(s) of rice is more than one pot of 10 cup(s) cooks well. Divide into 2 batches so the rice steams evenly - do not overfill a single pot.",
+      "rule_id": "JollofRiceEngine.add_rice",
+      "firing_sequence": 9
+    },
+    {
+      "order": 90,
+      "phase": "Inspect",
+      "text": "Check the rice tenderness and the liquid left. If it is still hard and the liquid is gone, add a little of the 3 cups hot reserve, cover, and continue on low heat. If it is still hard but liquid remains, keep cooking without adding more. If it is tender and the liquid is gone, move to the finish. If it is tender but there is excess liquid, uncover on very low heat until the liquid reduces. Repeat until tender.",
+      "rule_id": "JollofRiceEngine.inspect",
+      "firing_sequence": 6
+    },
+    {
+      "order": 100,
+      "phase": "Finish",
+      "text": "FINISH: turn off the heat and leave the pot covered to rest for 5-10 minutes so the grains firm up. Do not leave it over high heat, which would burn the base.",
+      "rule_id": "JollofRiceEngine.finish_regular",
+      "firing_sequence": 1
+    },
+    {
+      "order": 110,
+      "phase": "Serve",
+      "text": "Remove the bay leaves, fluff the rice gently and serve hot . Enjoy your jollof rice!",
+      "rule_id": "JollofRiceEngine.serve",
+      "firing_sequence": 5
+    }
+  ],
+  "ingredients": [
+    {
+      "key": "rice",
+      "label": "Rice",
+      "amount": "12",
+      "unit": "cups",
+      "note": "the base ingredient - everything is relative to it",
+      "raw_amount": 12.0,
+      "derivation": {
+        "formula": "User input",
+        "raw_amount": 12.0,
+        "rounding": "none"
+      }
+    },
+    {
+      "key": "bay_leaves",
+      "label": "Bay leaves",
+      "amount": "8",
+      "unit": "",
+      "note": null,
+      "raw_amount": 8.04,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 12.0,
+        "ratio": 0.67,
+        "source": "jollof.ingredients.bay_leaves.per_rice",
+        "raw_amount": 8.04,
+        "rounding": "count"
+      }
+    },
+    {
+      "key": "bell_peppers",
+      "label": "Bell peppers (tatashe)",
+      "amount": "8",
+      "unit": "",
+      "note": null,
+      "raw_amount": 8.04,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 12.0,
+        "ratio": 0.67,
+        "source": "jollof.ingredients.bell_peppers.per_rice",
+        "raw_amount": 8.04,
+        "rounding": "count"
+      }
+    },
+    {
+      "key": "curry_powder",
+      "label": "Curry powder",
+      "amount": "4",
+      "unit": "tbsp",
+      "note": null,
+      "raw_amount": 3.96,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 12.0,
+        "ratio": 0.33,
+        "source": "jollof.ingredients.curry_powder.per_rice",
+        "raw_amount": 3.96,
+        "rounding": "range"
+      }
+    },
+    {
+      "key": "onions",
+      "label": "Onions",
+      "amount": "8",
+      "unit": "medium",
+      "note": null,
+      "raw_amount": 8.04,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 12.0,
+        "ratio": 0.67,
+        "source": "jollof.ingredients.onions.per_rice",
+        "raw_amount": 8.04,
+        "rounding": "count"
+      }
+    },
+    {
+      "key": "protein",
+      "label": "Protein (chicken / beef / goat)",
+      "amount": "0",
+      "unit": "g",
+      "note": "Grams of protein per cup of rice; 0 when protein is 'none'",
+      "raw_amount": 0,
+      "derivation": {
+        "formula": "protein == none \u2192 0",
+        "rice_cups": 12.0,
+        "ratio": 167,
+        "source": "jollof.ingredients.protein.per_rice",
+        "raw_amount": 0,
+        "rounding": "grams"
+      }
+    },
+    {
+      "key": "salt",
+      "label": "Salt",
+      "amount": null,
+      "unit": "",
+      "note": "Account for salt already in the stock and seasoning cubes",
+      "raw_amount": null,
+      "derivation": {
+        "formula": "To taste; no fixed amount",
+        "rice_cups": 12.0,
+        "ratio": null,
+        "source": "jollof.ingredients.salt",
+        "raw_amount": null,
+        "rounding": "none"
+      }
+    },
+    {
+      "key": "scotch_bonnet",
+      "label": "Scotch bonnet peppers",
+      "amount": "8",
+      "unit": "",
+      "note": "Driven by the spice level, then by the rice",
+      "raw_amount": 8.04,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 12.0,
+        "ratio": 0.67,
+        "source": "jollof.ingredients.scotch_bonnet.per_rice_by_spice.medium",
+        "raw_amount": 8.04,
+        "rounding": "count"
+      }
+    },
+    {
+      "key": "seasoning_cubes",
+      "label": "Seasoning cubes",
+      "amount": "8",
+      "unit": "cubes",
+      "note": "Reduce if the stock is already well seasoned",
+      "raw_amount": 8.04,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 12.0,
+        "ratio": 0.67,
+        "source": "jollof.ingredients.seasoning_cubes.per_rice",
+        "raw_amount": 8.04,
+        "rounding": "half"
+      }
+    },
+    {
+      "key": "stock",
+      "label": "Stock (total cooking liquid)",
+      "amount": "18",
+      "unit": "cups",
+      "note": "Total liquid target - subtract liquid already in the sauce and any blender water",
+      "raw_amount": 18.0,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 12.0,
+        "ratio": 1.5,
+        "source": "jollof.rice_types.parboiled.liquid_ratio",
+        "raw_amount": 18.0,
+        "rounding": "quarter"
+      }
+    },
+    {
+      "key": "thyme",
+      "label": "Thyme",
+      "amount": "4",
+      "unit": "tsp",
+      "note": null,
+      "raw_amount": 3.96,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 12.0,
+        "ratio": 0.33,
+        "source": "jollof.ingredients.thyme.per_rice",
+        "raw_amount": 3.96,
+        "rounding": "range"
+      }
+    },
+    {
+      "key": "tomato_paste",
+      "label": "Tomato paste",
+      "amount": "8",
+      "unit": "tbsp",
+      "note": null,
+      "raw_amount": 8.04,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 12.0,
+        "ratio": 0.67,
+        "source": "jollof.ingredients.tomato_paste.per_rice",
+        "raw_amount": 8.04,
+        "rounding": "range"
+      }
+    },
+    {
+      "key": "tomatoes",
+      "label": "Tomatoes",
+      "amount": "16",
+      "unit": "medium",
+      "note": null,
+      "raw_amount": 15.96,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 12.0,
+        "ratio": 1.33,
+        "source": "jollof.ingredients.tomatoes.per_rice",
+        "raw_amount": 15.96,
+        "rounding": "count"
+      }
+    },
+    {
+      "key": "vegetable_oil",
+      "label": "Vegetable oil",
+      "amount": "2",
+      "unit": "cups",
+      "note": null,
+      "raw_amount": 2.04,
+      "derivation": {
+        "formula": "rice_cups \u00d7 ratio",
+        "rice_cups": 12.0,
+        "ratio": 0.17,
+        "source": "jollof.ingredients.vegetable_oil.per_rice",
+        "raw_amount": 2.04,
+        "rounding": "quarter"
+      }
+    }
+  ],
+  "calc": {
+    "dish": "Jollof Rice",
+    "rice_cups": 12.0,
+    "rice_type": "parboiled",
+    "liquid_ratio": 1.5,
+    "expansion": 2.75,
+    "ing": {
+      "rice": {
+        "label": "Rice",
+        "amount": 12.0,
+        "raw_amount": 12.0,
+        "unit": "cups",
+        "derivation": {
+          "formula": "User input",
+          "raw_amount": 12.0,
+          "rounding": "none"
+        },
+        "note": "the base ingredient - everything is relative to it"
+      },
+      "bay_leaves": {
+        "label": "Bay leaves",
+        "unit": "",
+        "note": null,
+        "special": null,
+        "raw_amount": 8.04,
+        "amount": 8,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 12.0,
+          "ratio": 0.67,
+          "source": "jollof.ingredients.bay_leaves.per_rice",
+          "raw_amount": 8.04,
+          "rounding": "count"
+        }
+      },
+      "bell_peppers": {
+        "label": "Bell peppers (tatashe)",
+        "unit": "",
+        "note": null,
+        "special": null,
+        "raw_amount": 8.04,
+        "amount": 8,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 12.0,
+          "ratio": 0.67,
+          "source": "jollof.ingredients.bell_peppers.per_rice",
+          "raw_amount": 8.04,
+          "rounding": "count"
+        }
+      },
+      "curry_powder": {
+        "label": "Curry powder",
+        "unit": "tbsp",
+        "note": null,
+        "special": null,
+        "raw_amount": 3.96,
+        "amount": 4,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 12.0,
+          "ratio": 0.33,
+          "source": "jollof.ingredients.curry_powder.per_rice",
+          "raw_amount": 3.96,
+          "rounding": "range"
+        }
+      },
+      "onions": {
+        "label": "Onions",
+        "unit": "medium",
+        "note": null,
+        "special": null,
+        "raw_amount": 8.04,
+        "amount": 8,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 12.0,
+          "ratio": 0.67,
+          "source": "jollof.ingredients.onions.per_rice",
+          "raw_amount": 8.04,
+          "rounding": "count"
+        }
+      },
+      "protein": {
+        "label": "Protein (chicken / beef / goat)",
+        "unit": "g",
+        "note": "Grams of protein per cup of rice; 0 when protein is 'none'",
+        "special": "protein",
+        "raw_amount": 0,
+        "amount": 0,
+        "derivation": {
+          "formula": "protein == none \u2192 0",
+          "rice_cups": 12.0,
+          "ratio": 167,
+          "source": "jollof.ingredients.protein.per_rice",
+          "raw_amount": 0,
+          "rounding": "grams"
+        }
+      },
+      "salt": {
+        "label": "Salt",
+        "unit": "",
+        "note": "Account for salt already in the stock and seasoning cubes",
+        "special": "to_taste",
+        "raw_amount": null,
+        "amount": null,
+        "derivation": {
+          "formula": "To taste; no fixed amount",
+          "rice_cups": 12.0,
+          "ratio": null,
+          "source": "jollof.ingredients.salt",
+          "raw_amount": null,
+          "rounding": "none"
+        }
+      },
+      "scotch_bonnet": {
+        "label": "Scotch bonnet peppers",
+        "unit": "",
+        "note": "Driven by the spice level, then by the rice",
+        "special": "spice",
+        "raw_amount": 8.04,
+        "amount": 8,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 12.0,
+          "ratio": 0.67,
+          "source": "jollof.ingredients.scotch_bonnet.per_rice_by_spice.medium",
+          "raw_amount": 8.04,
+          "rounding": "count"
+        }
+      },
+      "seasoning_cubes": {
+        "label": "Seasoning cubes",
+        "unit": "cubes",
+        "note": "Reduce if the stock is already well seasoned",
+        "special": "seasoning",
+        "raw_amount": 8.04,
+        "amount": 8.0,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 12.0,
+          "ratio": 0.67,
+          "source": "jollof.ingredients.seasoning_cubes.per_rice",
+          "raw_amount": 8.04,
+          "rounding": "half"
+        }
+      },
+      "stock": {
+        "label": "Stock (total cooking liquid)",
+        "unit": "cups",
+        "note": "Total liquid target - subtract liquid already in the sauce and any blender water",
+        "special": "liquid",
+        "raw_amount": 18.0,
+        "amount": 18.0,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 12.0,
+          "ratio": 1.5,
+          "source": "jollof.rice_types.parboiled.liquid_ratio",
+          "raw_amount": 18.0,
+          "rounding": "quarter"
+        }
+      },
+      "thyme": {
+        "label": "Thyme",
+        "unit": "tsp",
+        "note": null,
+        "special": null,
+        "raw_amount": 3.96,
+        "amount": 4,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 12.0,
+          "ratio": 0.33,
+          "source": "jollof.ingredients.thyme.per_rice",
+          "raw_amount": 3.96,
+          "rounding": "range"
+        }
+      },
+      "tomato_paste": {
+        "label": "Tomato paste",
+        "unit": "tbsp",
+        "note": null,
+        "special": null,
+        "raw_amount": 8.04,
+        "amount": 8,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 12.0,
+          "ratio": 0.67,
+          "source": "jollof.ingredients.tomato_paste.per_rice",
+          "raw_amount": 8.04,
+          "rounding": "range"
+        }
+      },
+      "tomatoes": {
+        "label": "Tomatoes",
+        "unit": "medium",
+        "note": null,
+        "special": null,
+        "raw_amount": 15.96,
+        "amount": 16,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 12.0,
+          "ratio": 1.33,
+          "source": "jollof.ingredients.tomatoes.per_rice",
+          "raw_amount": 15.96,
+          "rounding": "count"
+        }
+      },
+      "vegetable_oil": {
+        "label": "Vegetable oil",
+        "unit": "cups",
+        "note": null,
+        "special": null,
+        "raw_amount": 2.04,
+        "amount": 2.0,
+        "derivation": {
+          "formula": "rice_cups \u00d7 ratio",
+          "rice_cups": 12.0,
+          "ratio": 0.17,
+          "source": "jollof.ingredients.vegetable_oil.per_rice",
+          "raw_amount": 2.04,
+          "rounding": "quarter"
+        }
+      }
+    },
+    "liquid_reserve_raw": 3.0,
+    "liquid_reserve": 3.0,
+    "liquid_cups": 18.0,
+    "protein": "none",
+    "protein_g": 0,
+    "style": "regular",
+    "pot_capacity": 10.0,
+    "pot_batches": 2
+  },
+  "audit": {
+    "schema_version": 1,
+    "run_id": "375b7a60-d7a8-4c61-8b1a-bc347121ae64",
+    "generated_at": "2026-09-14T21:26:23.617229+00:00",
+    "config_hash": "657550b6981c6c243bc74d41f062af83be1311ad898e1bc7904396c12c96dca2",
+    "implementation_hash": "1bbdcfba43ff9abb294f16c4d61a5825b59b8d48fbdc64920632b3e6d18e2fd6",
+    "knowledge_snapshot": {
+      "_help": "Rice-relative proportionality rules. RICE IS THE BASE INGREDIENT: every other ingredient defines its OWN independent relationship to rice via 'per_rice' (amount per 1 cup of rice). Recipes are independent and do NOT share parameters. Insert / modify / delete entries freely - the system picks up changes on the next request (or restart the server). Special ingredients: 'spice' (per_rice_by_spice), 'liquid' (amount = rice x rice_types[rice_type].liquid_ratio), 'protein' (per_rice grams applied to the chosen protein), 'seasoning' (normal per_rice but never scaled blindly - see note), 'to_taste' (no fixed quantity). Rounding rules: 'count' (whole items), 'half' (nearest 1/2), 'quarter' (nearest 1/4), 'range' (e.g. 2-3 tbsp when the value is fractional), 'grams' (nearest 50 g). These values are MOCKS - tune them to taste.",
+      "fried_rice": {
+        "description": "Nigerian Fried Rice - every quantity is relative to the rice",
+        "ingredients": {
+          "bell_peppers": {
+            "label": "Green bell peppers",
+            "per_rice": 0.1,
+            "rounding": "quarter",
+            "unit": "bulb"
+          },
+          "carrots": {
+            "label": "Carrots",
+            "per_rice": 0.1,
+            "rounding": "quarter",
+            "unit": "stick"
+          },
+          "curry_powder": {
+            "label": "Curry powder",
+            "per_rice": 0.25,
+            "rounding": "range",
+            "unit": "tbsp"
+          },
+          "green_beans": {
+            "label": "Green beans",
+            "per_rice": 0.35,
+            "rounding": "quarter",
+            "unit": "cups"
+          },
+          "green_peas": {
+            "label": "Green peas",
+            "per_rice": 0.35,
+            "rounding": "quarter",
+            "unit": "cups"
+          },
+          "onions": {
+            "label": "Onions",
+            "per_rice": 1,
+            "rounding": "count",
+            "unit": "bulbs"
+          },
+          "protein": {
+            "label": "Protein (chicken / liver)",
+            "note": "Grams of protein per cup of rice; 0 when protein is 'none'",
+            "per_rice": 150,
+            "rounding": "grams",
+            "special": "protein",
+            "unit": "g"
+          },
+          "salt": {
+            "label": "Salt",
+            "note": "Account for salt already in the stock and seasoning cubes",
+            "special": "to_taste"
+          },
+          "scotch_bonnet": {
+            "label": "Scotch bonnet pepper",
+            "note": "Driven by the spice level, then by the rice",
+            "per_rice_by_spice": {
+              "hot": 1.0,
+              "medium": 0.5,
+              "mild": 0.25
+            },
+            "rounding": "count",
+            "special": "spice",
+            "unit": ""
+          },
+          "seasoning_cubes": {
+            "label": "Seasoning cubes",
+            "note": "Reduce if the stock is already well seasoned",
+            "per_rice": 1.0,
+            "rounding": "half",
+            "special": "seasoning",
+            "unit": "cubes"
+          },
+          "spring_onions": {
+            "label": "Spring onions (optional)",
+            "per_rice": 0.125,
+            "rounding": "quarter",
+            "unit": "cups"
+          },
+          "stock": {
+            "label": "Stock (total cooking liquid)",
+            "note": "Total liquid target - subtract liquid already in the stock",
+            "rounding": "quarter",
+            "special": "liquid",
+            "unit": "cups"
+          },
+          "sweet_corn": {
+            "label": "Sweet corn",
+            "per_rice": 0.25,
+            "rounding": "quarter",
+            "unit": "cups"
+          },
+          "thyme": {
+            "label": "Thyme",
+            "per_rice": 0.5,
+            "rounding": "range",
+            "unit": "tsp"
+          },
+          "vegetable_oil": {
+            "label": "Vegetable oil",
+            "per_rice": 0.75,
+            "rounding": "range",
+            "unit": "tbsp"
+          }
+        },
+        "liquid_reserve_per_rice": 0.25,
+        "rice_types": {
+          "basmati": {
+            "expansion": 3.25,
+            "liquid_ratio": 1.25
+          },
+          "other": {
+            "expansion": 2.75,
+            "liquid_ratio": 1.75
+          },
+          "parboiled": {
+            "expansion": 3.0,
+            "liquid_ratio": 1.5
+          }
+        }
+      },
+      "jollof": {
+        "description": "Jollof Rice - every quantity is relative to the rice",
+        "ingredients": {
+          "bay_leaves": {
+            "label": "Bay leaves",
+            "per_rice": 0.67,
+            "rounding": "count",
+            "unit": ""
+          },
+          "bell_peppers": {
+            "label": "Bell peppers (tatashe)",
+            "per_rice": 0.67,
+            "rounding": "count",
+            "unit": ""
+          },
+          "curry_powder": {
+            "label": "Curry powder",
+            "per_rice": 0.33,
+            "rounding": "range",
+            "unit": "tbsp"
+          },
+          "onions": {
+            "label": "Onions",
+            "per_rice": 0.67,
+            "rounding": "count",
+            "unit": "medium"
+          },
+          "protein": {
+            "label": "Protein (chicken / beef / goat)",
+            "note": "Grams of protein per cup of rice; 0 when protein is 'none'",
+            "per_rice": 167,
+            "rounding": "grams",
+            "special": "protein",
+            "unit": "g"
+          },
+          "salt": {
+            "label": "Salt",
+            "note": "Account for salt already in the stock and seasoning cubes",
+            "special": "to_taste"
+          },
+          "scotch_bonnet": {
+            "label": "Scotch bonnet peppers",
+            "note": "Driven by the spice level, then by the rice",
+            "per_rice_by_spice": {
+              "hot": 1.33,
+              "medium": 0.67,
+              "mild": 0.33
+            },
+            "rounding": "count",
+            "special": "spice",
+            "unit": ""
+          },
+          "seasoning_cubes": {
+            "label": "Seasoning cubes",
+            "note": "Reduce if the stock is already well seasoned",
+            "per_rice": 0.67,
+            "rounding": "half",
+            "special": "seasoning",
+            "unit": "cubes"
+          },
+          "stock": {
+            "label": "Stock (total cooking liquid)",
+            "note": "Total liquid target - subtract liquid already in the sauce and any blender water",
+            "rounding": "quarter",
+            "special": "liquid",
+            "unit": "cups"
+          },
+          "thyme": {
+            "label": "Thyme",
+            "per_rice": 0.33,
+            "rounding": "range",
+            "unit": "tsp"
+          },
+          "tomato_paste": {
+            "label": "Tomato paste",
+            "per_rice": 0.67,
+            "rounding": "range",
+            "unit": "tbsp"
+          },
+          "tomatoes": {
+            "label": "Tomatoes",
+            "per_rice": 1.33,
+            "rounding": "count",
+            "unit": "medium"
+          },
+          "vegetable_oil": {
+            "label": "Vegetable oil",
+            "per_rice": 0.17,
+            "rounding": "quarter",
+            "unit": "cups"
+          }
+        },
+        "liquid_reserve_per_rice": 0.25,
+        "rice_types": {
+          "basmati": {
+            "expansion": 3.0,
+            "liquid_ratio": 1.25
+          },
+          "other": {
+            "expansion": 2.5,
+            "liquid_ratio": 1.75
+          },
+          "parboiled": {
+            "expansion": 2.75,
+            "liquid_ratio": 1.5
+          }
+        }
+      }
+    },
+    "runtime": {
+      "python": "3.12.1",
+      "experta": "1.9.4",
+      "frozendict": "1.2",
+      "schema": "0.6.7"
+    },
+    "initial_facts": [
+      {
+        "fact_id": 1,
+        "name": "ready",
+        "source": "validated parameters and knowledge"
+      },
+      {
+        "fact_id": 2,
+        "name": "protein_none",
+        "source": "params.protein"
+      },
+      {
+        "fact_id": 3,
+        "name": "style_regular",
+        "source": "params.style"
+      }
+    ],
+    "firings": [
+      {
+        "sequence": 1,
+        "rule_id": "JollofRiceEngine.finish_regular",
+        "fired_at": "2026-09-14T21:26:23.608528+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "style_regular"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              3
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 100
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 4,
+            "order": 100,
+            "phase": "Finish"
+          }
+        ]
+      },
+      {
+        "sequence": 2,
+        "rule_id": "JollofRiceEngine.fry_base",
+        "fired_at": "2026-09-14T21:26:23.609326+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 50
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 5,
+            "order": 50,
+            "phase": "Fry base"
+          }
+        ]
+      },
+      {
+        "sequence": 3,
+        "rule_id": "JollofRiceEngine.blend",
+        "fired_at": "2026-09-14T21:26:23.610095+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 30
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 6,
+            "order": 30,
+            "phase": "Blend"
+          }
+        ]
+      },
+      {
+        "sequence": 4,
+        "rule_id": "JollofRiceEngine.overview",
+        "fired_at": "2026-09-14T21:26:23.611251+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 10
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [
+          {
+            "expression": "protein == none",
+            "inputs": {
+              "protein": "none"
+            },
+            "result": true
+          }
+        ],
+        "outputs": [
+          {
+            "fact_id": 7,
+            "order": 10,
+            "phase": "Overview"
+          }
+        ]
+      },
+      {
+        "sequence": 5,
+        "rule_id": "JollofRiceEngine.serve",
+        "fired_at": "2026-09-14T21:26:23.612325+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 110
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [
+          {
+            "expression": "protein != none",
+            "inputs": {
+              "protein": "none"
+            },
+            "result": false
+          }
+        ],
+        "outputs": [
+          {
+            "fact_id": 8,
+            "order": 110,
+            "phase": "Serve"
+          }
+        ]
+      },
+      {
+        "sequence": 6,
+        "rule_id": "JollofRiceEngine.inspect",
+        "fired_at": "2026-09-14T21:26:23.613161+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 90
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 9,
+            "order": 90,
+            "phase": "Inspect"
+          }
+        ]
+      },
+      {
+        "sequence": 7,
+        "rule_id": "JollofRiceEngine.season_and_liquid",
+        "fired_at": "2026-09-14T21:26:23.613915+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 70
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [
+          {
+            "expression": "protein == none",
+            "inputs": {
+              "protein": "none"
+            },
+            "result": true
+          }
+        ],
+        "outputs": [
+          {
+            "fact_id": 10,
+            "order": 70,
+            "phase": "Season"
+          }
+        ]
+      },
+      {
+        "sequence": 8,
+        "rule_id": "JollofRiceEngine.reduce_sauce",
+        "fired_at": "2026-09-14T21:26:23.614687+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 60
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 11,
+            "order": 60,
+            "phase": "Cook sauce"
+          }
+        ]
+      },
+      {
+        "sequence": 9,
+        "rule_id": "JollofRiceEngine.add_rice",
+        "fired_at": "2026-09-14T21:26:23.615462+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 80
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [
+          {
+            "expression": "pot_batches > 1",
+            "inputs": {
+              "pot_batches": 2,
+              "rice_cups": 12.0,
+              "capacity": 10.0
+            },
+            "result": true
+          }
+        ],
+        "outputs": [
+          {
+            "fact_id": 12,
+            "order": 80,
+            "phase": "Cook rice"
+          }
+        ]
+      },
+      {
+        "sequence": 10,
+        "rule_id": "JollofRiceEngine.prepare",
+        "fired_at": "2026-09-14T21:26:23.616218+00:00",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "ready"
+            },
+            "satisfied": true,
+            "fact_ids": [
+              1
+            ]
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 20
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ],
+        "decisions": [],
+        "outputs": [
+          {
+            "fact_id": 13,
+            "order": 20,
+            "phase": "Prepare"
+          }
+        ]
+      }
+    ],
+    "not_fired": [
+      {
+        "rule_id": "JollofRiceEngine.cook_protein",
+        "evaluated_at": "end_of_run",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "protein_present"
+            },
+            "satisfied": false,
+            "fact_ids": []
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 40
+            },
+            "satisfied": true,
+            "fact_ids": []
+          }
+        ]
+      },
+      {
+        "rule_id": "JollofRiceEngine.finish_party",
+        "evaluated_at": "end_of_run",
+        "conditions": [
+          {
+            "kind": "present",
+            "fact_type": "Flag",
+            "fields": {
+              "name": "style_party"
+            },
+            "satisfied": false,
+            "fact_ids": []
+          },
+          {
+            "kind": "absent",
+            "fact_type": "Step",
+            "fields": {
+              "order": 100
+            },
+            "satisfied": false,
+            "fact_ids": [
+              4
+            ]
+          }
+        ]
+      }
+    ],
+    "derived": {
+      "dish": "Jollof Rice",
+      "rice_cups": 12.0,
+      "rice_type": "parboiled",
+      "liquid_ratio": 1.5,
+      "expansion": 2.75,
+      "liquid_reserve_raw": 3.0,
+      "liquid_reserve": 3.0,
+      "liquid_cups": 18.0,
+      "protein": "none",
+      "protein_g": 0,
+      "style": "regular",
+      "pot_capacity": 10.0,
+      "pot_batches": 2
+    },
+    "scope": "Guide generation only. Cooking observations are advice, not sensed facts."
+  }
+}

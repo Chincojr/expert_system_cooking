@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExpertCook - Rice Dishes Expert System</title>
+<style>
+  :root {
+    --bg: #faf7f2;
+    --card: #ffffff;
+    --ink: #2b2620;
+    --muted: #7a7268;
+    --accent: #c2410c;
+    --accent-soft: #fff1e7;
+    --border: #e8e0d5;
+    --green: #166534;
+    --green-soft: #f0f7f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    line-height: 1.55;
+  }
+  header {
+    background: linear-gradient(135deg, #7c2d12 0%, #c2410c 60%, #ea580c 100%);
+    color: #fff; padding: 28px 20px;
+  }
+  header .wrap { max-width: 1000px; margin: 0 auto; }
+  header h1 { margin: 0 0 6px; font-size: 28px; }
+  header p { margin: 0; opacity: .9; font-size: 14px; }
+  main { max-width: 1000px; margin: 0 auto; padding: 24px 20px 60px; }
+
+  .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab {
+    padding: 10px 22px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--card); cursor: pointer; font-size: 15px; font-weight: 600;
+    color: var(--muted);
+  }
+  .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px; margin-bottom: 18px;
+    box-shadow: 0 1px 3px rgba(43,38,32,.05);
+  }
+  .card h2 { margin: 0 0 14px; font-size: 18px; }
+  .hint { color: var(--muted); font-size: 13px; margin: 4px 0 0; }
+
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .field label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 5px; }
+  .field .help { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 4px; }
+  .field select, .field input {
+    width: 100%; padding: 9px 11px; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 14px; background: #fff; color: var(--ink);
+  }
+  .field select:focus, .field input:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+
+  button.primary {
+    background: var(--accent); color: #fff; border: none; padding: 12px 28px;
+    border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  button.primary:disabled { background: #d6c8ba; cursor: wait; }
+  button.secondary {
+    background: var(--card); color: var(--accent); border: 1px solid var(--accent);
+    padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .actions { display: flex; gap: 12px; align-items: center; margin-top: 18px; }
+
+  .error {
+    background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;
+    padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 14px;
+  }
+  .summary-box {
+    background: var(--green-soft); border: 1px solid #d5e8d5;
+    border-radius: 10px; padding: 14px 18px; margin-bottom: 18px;
+  }
+  .summary-box ul { margin: 0; padding-left: 18px; }
+  .summary-box li { margin: 3px 0; font-size: 14px; }
+
+  table.ing {
+    width: 100%; border-collapse: collapse; font-size: 14px;
+  }
+  table.ing th {
+    text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--border);
+    color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em;
+  }
+  table.ing td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.ing tr.rice td { background: var(--accent-soft); font-weight: 600; }
+  table.ing td.note { color: var(--muted); font-size: 12.5px; font-style: italic; }
+
+  .steps { counter-reset: step; }
+  .step { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .step:last-child { border-bottom: none; }
+  .step .num {
+    counter-increment: step; flex: 0 0 34px; height: 34px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; display: flex;
+    align-items: center; justify-content: center; font-size: 14px;
+  }
+  .step .num::before { content: counter(step); }
+  .step .body { flex: 1; }
+  .step .phase {
+    display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--accent); background: var(--accent-soft);
+    padding: 2px 10px; border-radius: 20px; margin-bottom: 6px;
+  }
+  .step .text { white-space: pre-wrap; font-size: 14.5px; }
+
+  #proportions-editor {
+    width: 100%; min-height: 420px; font-family: Consolas, Menlo, monospace;
+    font-size: 13px; padding: 12px; border: 1px solid var(--border);
+    border-radius: 10px; background: #fbfbf8; color: var(--ink); tab-size: 2;
+  }
+  .banner-ok {
+    background: var(--green-soft); border: 1px solid #bbe3bb; color: var(--green);
+    padding: 10px 16px; border-radius: 10px; margin-bottom: 14px; font-size: 14px;
+  }
+  footer { text-align: center; color: var(--muted); font-size: 12.5px; padding: 20px; }
+  .hidden { display: none; }
+  details { margin-top: 10px; font-size: 13px; }
+  summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; }
+  .table-scroll { overflow-x: auto; }
+  .audit-record { padding: 12px 0; border-bottom: 1px solid var(--border); font-weight: 400; }
+  .audit-record:last-child { border-bottom: 0; }
+  .audit-fields { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 9px 14px; margin: 0; font-size: 13px; }
+  .audit-fields dt { font-weight: 600; color: var(--muted); }
+  .audit-fields dd { margin: 0; overflow-wrap: anywhere; }
+  .audit-fields ul { margin: 0; padding-left: 17px; }
+  .audit-fields li + li { margin-top: 4px; }
+  .audit-technical summary { color: var(--muted); font-weight: 400; }
+  @media (max-width: 600px) {
+    .audit-fields { grid-template-columns: 1fr; gap: 4px; }
+    .audit-fields dd { margin-bottom: 9px; }
+    table.ing { min-width: 580px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>ExpertCook</h1>
+    <p>Rice is the base ingredient - set the rice and every other quantity follows from it.</p>
+  </div>
+</header>
+
+<main>
+  <div class="tabs">
+    <button class="tab active" id="tab-cook" onclick="showTab('cook')">Cook</button>
+    <button class="tab" id="tab-props" onclick="showTab('props')">Proportionality rules</button>
+  </div>
+
+  <!-- ======================= COOK TAB ======================= -->
+  <section id="panel-cook">
+    <div class="card">
+      <h2>1. Choose a dish</h2>
+      <div class="tabs" id="dish-tabs"></div>
+      <p class="hint" id="dish-desc"></p>
+    </div>
+
+    <div class="card">
+      <h2>2. Set the parameters</h2>
+      <p class="hint" style="margin-bottom:14px">Start with the rice - it is the most important ingredient. Everything else is calculated from it.</p>
+      <div class="form-grid" id="params"></div>
+      <div class="actions">
+        <button class="primary" id="generate" onclick="generate()">Generate Guide</button>
+        <span class="hint" id="gen-status"></span>
+      </div>
+    </div>
+
+    <div id="result" class="hidden">
+      <div id="error-box"></div>
+
+      <div class="card">
+        <h2 id="plan-title"></h2>
+        <div class="summary-box"><ul id="summary"></ul></div>
+      </div>
+
+      <div class="card">
+        <h2>Ingredients <span style="font-weight:400;color:var(--muted);font-size:13px">(all relative to the rice)</span></h2>
+        <div class="table-scroll"><table class="ing">
+          <thead><tr><th>Ingredient</th><th>Quantity</th><th>Calculation and note</th></tr></thead>
+          <tbody id="ingredients"></tbody>
+        </table></div>
+      </div>
+
+      <div class="card">
+        <h2>Step-by-step guide</h2>
+        <div class="steps" id="steps"></div>
+      </div>
+      <div class="card" id="audit-card">
+        <h2>How this guide was generated</h2>
+        <p class="hint">These rules generate cooking advice. The system does not observe your food while it cooks.</p>
+        <p id="audit-summary"></p>
+        <details><summary>Rules in the order they fired</summary><div id="audit-firings"></div></details>
+        <details><summary>Rules that did not fire</summary><div id="audit-skipped"></div></details>
+        <details><summary>Inputs and calculation summary</summary><div id="audit-config"></div></details>
+        <button class="secondary" id="download-audit" onclick="downloadAudit()">Download guide and audit JSON</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== PROPORTIONS TAB ==================== -->
+  <section id="panel-props" class="hidden">
+    <div class="card">
+      <h2>Rice-relative proportionality rules</h2>
+      <p class="hint" style="margin-bottom:14px">
+        Each ingredient has its own independent relationship to rice (no shared factor).
+        Edit ratios or optional ingredients, then save. Ingredients used by cooking steps are required.
+        Quantities are <b>per 1 cup of rice</b>. Changes apply immediately to new guides.
+      </p>
+      <div id="props-status"></div>
+      <textarea id="proportions-editor" spellcheck="false"></textarea>
+      <div class="field">
+        <label for="admin-token">Administrator token to save changes</label>
+        <input id="admin-token" type="password" autocomplete="off" placeholder="Provided by the site owner">
+        <p class="hint">Used only for saving rules; it is not included in exported guides.</p>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="saveProportions()">Save rules</button>
+        <button class="secondary" onclick="loadProportions()">Reload</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>ExpertCook - an experta rule-based expert system. Jollof Rice &amp; Nigerian Fried Rice.</footer>
+
+<script src="/static/audit-view.js"></script>
+<script>
+let DISHES = [];
+let currentDish = null;
+let currentPlan = null;
+
+async function fetchJSON(url, options) {
+  const res = await fetch(url, options);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || ("HTTP " + res.status));
+  return data;
+}
+
+function showTab(name) {
+  document.getElementById('tab-cook').classList.toggle('active', name === 'cook');
+  document.getElementById('tab-props').classList.toggle('active', name === 'props');
+  document.getElementById('panel-cook').classList.toggle('hidden', name !== 'cook');
+  document.getElementById('panel-props').classList.toggle('hidden', name !== 'props');
+  if (name === 'props') loadProportions();
+}
+
+async function init() {
+  const data = await fetchJSON('/api/dishes');
+  DISHES = data.dishes;
+  const tabs = document.getElementById('dish-tabs');
+  tabs.innerHTML = '';
+  DISHES.forEach((d, i) => {
+    const b = document.createElement('button');
+    b.className = 'tab' + (i === 0 ? ' active' : '');
+    b.textContent = d.name;
+    b.onclick = () => selectDish(d.key);
+    b.dataset.key = d.key;
+    tabs.appendChild(b);
+  });
+  selectDish(DISHES[0].key);
+}
+
+function selectDish(key) {
+  currentDish = key;
+  const dish = DISHES.find(d => d.key === key);
+  document.querySelectorAll('#dish-tabs .tab').forEach(b =>
+    b.classList.toggle('active', b.dataset.key === key));
+  document.getElementById('dish-desc').textContent = dish.description;
+  renderParams(dish.params);
+  document.getElementById('result').classList.add('hidden');
+}
+
+function renderParams(specs) {
+  const grid = document.getElementById('params');
+  grid.innerHTML = '';
+  specs.forEach(spec => {
+    const field = document.createElement('div');
+    field.className = 'field';
+    const label = document.createElement('label');
+    label.textContent = spec.label;
+    field.appendChild(label);
+    let input;
+    if (spec.type === 'choice') {
+      input = document.createElement('select');
+      spec.choices.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c; opt.textContent = c;
+        if (c === spec.default) opt.selected = true;
+        input.appendChild(opt);
+      });
+    } else {
+      input = document.createElement('input');
+      input.type = 'number';
+      input.step = spec.step || 1;
+      input.min = spec.min;
+      input.value = spec.default;
+    }
+    input.name = spec.name;
+    field.appendChild(input);
+    if (spec.help) {
+      const help = document.createElement('div');
+      help.className = 'help';
+      help.textContent = spec.help;
+      field.appendChild(help);
+    }
+    grid.appendChild(field);
+  });
+}
+
+async function generate() {
+  const btn = document.getElementById('generate');
+  const status = document.getElementById('gen-status');
+  btn.disabled = true; status.textContent = 'Thinking...';
+  try {
+    const params = {};
+    document.querySelectorAll('#params input, #params select').forEach(el => {
+      params[el.name] = el.value;
+    });
+    const plan = await fetchJSON('/api/plan', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({dish: currentDish, params: params})
+    });
+    renderPlan(plan);
+    status.textContent = '';
+  } catch (err) {
+    status.textContent = '';
+    document.getElementById('result').classList.remove('hidden');
+    document.getElementById('error-box').innerHTML =
+      '<div class="error">' + esc(err.message) + '</div>';
+    document.getElementById('plan-title').textContent = '';
+    document.getElementById('summary').innerHTML = '';
+    document.getElementById('ingredients').innerHTML = '';
+    document.getElementById('steps').innerHTML = '';
+    document.getElementById('audit-card').classList.add('hidden');
+    currentPlan = null;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function renderPlan(plan) {
+  currentPlan = plan;
+  document.getElementById('audit-card').classList.remove('hidden');
+  document.getElementById('result').classList.remove('hidden');
+  document.getElementById('error-box').innerHTML = '';
+  document.getElementById('plan-title').textContent = plan.dish;
+
+  const ul = document.getElementById('summary');
+  ul.innerHTML = '';
+  plan.summary.forEach(line => {
+    const li = document.createElement('li');
+    li.textContent = line;
+    ul.appendChild(li);
+  });
+
+  const tbody = document.getElementById('ingredients');
+  tbody.innerHTML = '';
+  plan.ingredients.forEach(ing => {
+    const tr = document.createElement('tr');
+    if (ing.key === 'rice') tr.className = 'rice';
+    const amount = ing.amount === null ? 'to taste' : ing.amount + (ing.unit ? ' ' + ing.unit : '');
+    tr.innerHTML = '<td>' + esc(ing.label) + '</td><td>' + esc(amount) + '</td>' +
+                   '<td>' + calculationHTML(ing) + '<p class="hint">' + esc(ing.note || '') + '</p></td>';
+    tbody.appendChild(tr);
+  });
+
+  const steps = document.getElementById('steps');
+  steps.innerHTML = '';
+  plan.steps.forEach(step => {
+    const div = document.createElement('div');
+    div.className = 'step';
+    div.innerHTML = '<div class="num"></div><div class="body">' +
+      (step.phase ? '<div class="phase">' + esc(step.phase) + '</div>' : '') +
+      '<div class="text">' + esc(step.text) + '</div>' +
+      '<details><summary>Why this step?</summary>' +
+      firingHTML(plan.audit.firings.find(f => f.sequence === step.firing_sequence)) + '</details></div>';
+    steps.appendChild(div);
+  });
+  const audit = plan.audit;
+  document.getElementById('audit-summary').textContent =
+    audit.firings.length + ' cooking rules fired · Generated ' + AuditView.date(audit.generated_at);
+  document.getElementById('audit-firings').innerHTML = audit.firings.map(firingHTML).join('');
+  document.getElementById('audit-skipped').innerHTML = audit.not_fired.map(r => AuditView.skipped(r, plan)).join('') || '<p>All rules fired.</p>';
+  document.getElementById('audit-config').innerHTML = AuditView.overview(plan);
+  document.getElementById('result').scrollIntoView({behavior: 'smooth'});
+}
+
+function calculationHTML(ing) {
+  return AuditView.calculation(ing);
+}
+
+function firingHTML(f) {
+  return AuditView.firing(f, currentPlan);
+}
+
+function downloadAudit() {
+  if (!currentPlan) return;
+  const url = URL.createObjectURL(new Blob([JSON.stringify(currentPlan, null, 2)], {type: 'application/json'}));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'expertcook-' + currentPlan.audit.run_id + '.json';
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function loadProportions() {
+  const status = document.getElementById('props-status');
+  try {
+    const data = await fetchJSON('/api/proportions');
+    document.getElementById('proportions-editor').value = JSON.stringify(data, null, 2);
+    status.innerHTML = '';
+  } catch (err) {
+    status.innerHTML = '<div class="error">' + esc(err.message) + '</div>';
+  }
+}
+
+async function saveProportions() {
+  const status = document.getElementById('props-status');
+  let data;
+  try {
+    data = JSON.parse(document.getElementById('proportions-editor').value);
+  } catch (e) {
+    status.innerHTML = '<div class="error">Invalid JSON: ' + esc(e.message) + '</div>';
+    return;
+  }
+  try {
+    await fetchJSON('/api/proportions', {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + document.getElementById('admin-token').value},
+      body: JSON.stringify(data)
+    });
+    status.innerHTML = '<div class="banner-ok">Saved. New guides will use the updated rules.</div>';
+  } catch (err) {
+    status.innerHTML = '<div class="error">' + esc(err.message) + '</div>';
+  }
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+init().catch(err => {
+  document.getElementById('dish-tabs').innerHTML =
+    '<div class="error">Failed to load dishes: ' + esc(err.message) + '</div>';
+});
+</script>
+</body>
+</html>

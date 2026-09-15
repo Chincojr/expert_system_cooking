@@ -8,27 +8,25 @@ The procedure uses long-grain parboiled rice as its reference recipe. Other rice
 
 Before generating the cooking procedure, the system must receive the following parameters:
 
-Recipe parameters: Desired number of servings, reference number of servings, rice type, cooking method, cooking style, and desired spice level.
+Recipe parameters: rice type, cooking method, cooking style, and desired spice level.
 
 Equipment parameters: Cooking pot capacity, stove heat settings, blender capacity, and available cooking time.
 
-Ingredient parameters: Reference quantities of rice, tomatoes, bell peppers, scotch bonnet peppers, onions, tomato paste, vegetable oil, stock, curry powder, thyme, seasoning cubes, and salt.
+Ingredient parameters: Reference quantities of rice, tomatoes, bell peppers, scotch bonnet peppers, onions, tomato paste, vegetable oil, stock, curry powder, thyme, seasoning cubes, and salt, bay leaf.
 
 Cooking parameters: Liquid-to-rice ratio, sauce consistency target, rice tenderness target, initial cooking duration, additional cooking duration, resting duration, and liquid reserve.
 
 These parameters provide the information required to generate the recipe and determine how the cooking procedure should behave.
 
+Note the main ingredient is the rice everything else is relative to the rice
+
 ## 2. Calculate ingredient quantities
 
-The system first determines the scaling factor using the desired number of servings and the reference number of servings.
+Rice is the main ingredient and everuthing else is relative to it. The proportionality in respect to other ingredient varies by ingredient
 
-Scaling factor = Desired servings ÷ Reference servings.
+Within the system I need a place where I can define the relationship between each ingredient and rice. Note: they do not share proportionality
 
-For every ingredient that scales proportionally, the required quantity is calculated by multiplying its reference quantity by the scaling factor.
-
-For example, if the reference recipe serves 4 people and the requested recipe serves 10 people, the scaling factor is 2.5.
-
-The system therefore calculates 7.5 cups of rice, 10 tomatoes, 5 bell peppers, 1.25 cups of vegetable oil, and 5 tablespoons of tomato paste.
+Note use ranges when the quantity of ingredient excluding (rice) is a decimal
 
 Ingredients that require special treatment, such as salt, pepper, and cooking liquid, must be adjusted using their own rules rather than being scaled blindly.
 
@@ -106,11 +104,11 @@ Before cooking begins, the system checks whether the cooking pot has sufficient 
 
 If the batch exceeds the pot's capacity, the system instructs the cook to divide the recipe into smaller batches.
 
-The pot is covered tightly, and the heat is reduced to low.
+The pot is covered tightly, and the heat is reduced to medium.
 
 The system generates an initial cooking duration appropriate to the selected rice type and cooking method.
 
-For the reference stovetop procedure, the initial cooking period is approximately 20 minutes.
+For the reference stovetop procedure, the initial cooking period is approximately 20-30 minutes.Depending on rice type, the main goal is to check if the rice has softened.
 
 The stage is complete when the initial cooking period has elapsed and the rice is ready for inspection.
 
@@ -152,7 +150,7 @@ The rice absorption rate represents how much liquid the selected rice requires. 
 
 The pot surface area helps estimate evaporation, while the pot capacity determines whether the entire batch can be cooked together.
 
-The ingredient rounding rules determine how fractional quantities are converted into practical measurements. For example, a calculated quantity of 2.5 seasoning cubes may be represented as two and a half cubes or an equivalent measured quantity of seasoning powder.
+The ingredient rounding rules determine how fractional quantities are converted into practical measurements. For example, a calculated quantity of 2.5 seasoning cubes may be represented as two and a half cubes or an equivalent measured quantity of seasoning powder. Do not use decimal amounts for ingredients. Use range. e.g Instead of 2.65 tbsp, you can use 2-3 tbsp. For 2.25, use 2.
 
 The batch size limit determines when a recipe must be divided into multiple cooking batches.
 
@@ -162,7 +160,6 @@ These parameters allow the system to handle differences in ingredients, equipmen
 
 The expert system should begin by receiving the input parameters and retrieving the appropriate reference recipe.
 
-It then calculates the scaling factor and the required ingredient quantities. Ingredient-specific rules are applied to quantities that do not scale directly.
 
 The system checks the cooking equipment, calculates the initial liquid requirement, and generates the ordered cooking instructions.
 
@@ -173,3 +170,5 @@ During cooking, the system uses the observed sauce consistency, rice tenderness,
 The procedure terminates when the rice satisfies the defined completion conditions.
 
 The central design principle is that the recipe is a parameterized sequence of actions, not a fixed list of quantities and instructions. The parameters determine the required amounts, while the procedural rules determine which actions are performed and when the system advances to the next stage.
+
+The proportional relationship of ingredients in respect to rice, is what defines their quantity. Note: the proportional relationship has not been defined, but the system should create space such that it can be inserted/created/modified as needed by the programmer.

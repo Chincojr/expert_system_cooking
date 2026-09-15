@@ -4,9 +4,10 @@ Run it with:
 
     venv/Scripts/python.exe ui.py
 
-Pick a dish, set the parameters, and click "Generate Guide". The parameter
-widgets are built automatically from ``expertcook.recipes.PARAM_SPECS`` (the same
-source the CLI uses), so the two interfaces always stay in sync.
+Pick a dish, set the parameters (RICE FIRST - it is the base everything else
+is derived from), and click "Generate Guide". The parameter widgets are built
+automatically from ``expertcook.recipes.PARAM_SPECS`` (the same source the
+CLI and web server use), so all interfaces always stay in sync.
 """
 
 import tkinter as tk
@@ -26,8 +27,8 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("ExpertCook - Rice Dishes Expert System")
-        self.geometry("860x680")
-        self.minsize(700, 560)
+        self.geometry("900x720")
+        self.minsize(720, 600)
 
         self._dish_keys = list(DISHES)
         self._dish_names = [DISHES[k] for k in self._dish_keys]
@@ -42,8 +43,8 @@ class App(tk.Tk):
         header.pack(fill="x")
         ttk.Label(header, text="ExpertCook", font=TITLE_FONT).pack(anchor="w")
         ttk.Label(header,
-                  text="Choose a dish and your options, then generate a "
-                       "step-by-step cooking guide.",
+                  text="Rice is the base ingredient - set the rice and every "
+                       "other quantity follows from it.",
                   font=LABEL_FONT, foreground="#555").pack(anchor="w")
 
         controls = ttk.Frame(self, padding=(16, 4))
@@ -92,13 +93,15 @@ class App(tk.Tk):
             var = tk.StringVar(value=str(spec["default"]))
             self._param_vars[spec["name"]] = var
 
-            if spec["type"] == "int":
-                widget = ttk.Spinbox(self._params_frame, from_=spec.get("min", 1),
-                                     to=100000, textvariable=var, width=10)
-            else:
+            if spec["type"] == "choice":
                 widget = ttk.Combobox(self._params_frame, textvariable=var,
                                       values=spec["choices"], state="readonly",
                                       width=18)
+            else:
+                step = spec.get("step", 1)
+                widget = ttk.Spinbox(self._params_frame,
+                                     from_=spec.get("min", 1), to=1000,
+                                     increment=step, textvariable=var, width=10)
             widget.grid(row=row, column=1, sticky="w", pady=5)
 
             if spec.get("help"):
@@ -124,6 +127,16 @@ class App(tk.Tk):
         lines.append("COOKING GUIDE: %s" % plan["dish"])
         lines.append("=" * 58)
         for line in plan["summary"]:
+            lines.append(line)
+        lines.append("-" * 58)
+        lines.append("INGREDIENTS (rice is the base):")
+        for ing in plan["ingredients"]:
+            amt = ing["amount"] if ing["amount"] is not None else "to taste"
+            unit = ing["unit"]
+            line = "  - %s: %s%s" % (ing["label"], amt,
+                                     (" " + unit) if unit else "")
+            if ing.get("note"):
+                line += "   (%s)" % ing["note"]
             lines.append(line)
         lines.append("-" * 58)
         for i, step in enumerate(plan["steps"], 1):
